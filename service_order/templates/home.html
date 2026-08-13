@@ -1,0 +1,75 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid py-4 px-4">
+    
+    <div class="d-flex flex-md-row flex-column justify-content-between align-items-md-center mb-4 pb-3 border-bottom">
+        <div>
+            <h2 class="fw-bold text-dark mb-1">Olá, {{ user.username|default:"Visitante" }}!</h2>
+            <p class="text-muted small mb-0">Bem-vindo ao painel de controle da <strong>Aferix</strong>.</p>
+        </div>
+        <div class="mt-2 mt-md-0">
+            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill small fw-semibold">
+                📅 {% now "d/m/Y" %}
+            </span>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm rounded-4">
+                <div class="card-body p-4 d-flex flex-column">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-3 p-2 me-3 fs-4">
+                            📝
+                        </div>
+                        <h5 class="card-title fw-bold text-dark mb-0">Ordens de Serviço</h5>
+                    </div>
+                    <p class="card-text text-secondary small flex-grow-1">
+                        Consulte o histórico completo, ou gere uma nova O.S. para seus clientes.
+                    </p>
+                    
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm rounded-4">
+                <div class="card-body p-4 d-flex flex-column">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-success bg-opacity-10 text-success rounded-3 p-2 me-3 fs-4">
+                            👥
+                        </div>
+                        <h5 class="card-title fw-bold text-dark mb-0">Clientes</h5>
+                    </div>
+                    <p class="card-text text-secondary small flex-grow-1">
+                        Gerencie a base de clientes, cadastre novos parceiros e atualize informações de contato e endereço.
+                    </p>
+                    
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm rounded-4">
+                <div class="card-body p-4 d-flex flex-column">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-warning bg-opacity-10 text-warning rounded-3 p-2 me-3 fs-4">
+                            ⚖️
+                        </div>
+                        <h5 class="card-title fw-bold text-dark mb-0">Balanças</h5>
+                    </div>
+                    <p class="card-text text-secondary small flex-grow-1">
+                        Controle o inventário de equipamentos vinculados, marcas, modelos.
+                    </p>
+                    
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

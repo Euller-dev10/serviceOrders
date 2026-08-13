@@ -1,0 +1,386 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<style>
+    @media print {
+        @page {
+            size: A4 portrait;
+            margin: 0.5cm 0.5cm !important;
+        }
+
+        html, body { 
+            background-color: #fff !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            font-size: 12px !important;
+            height: auto !important;
+        }
+
+        #sidebar-wrapper, .navbar, #sidebar, .nav, sidebar, nav, .d-print-none { 
+            display: none !important; 
+        }
+
+        .print-a4-container { 
+            max-width: 100% !important; 
+            width: 100% !important;
+            height: auto !important;
+            padding: 0 !important; 
+            margin: 0 !important; 
+            display: block !important;
+        }
+
+        .print-body-content {
+            display: block !important;
+            width: 100% !important;
+        }
+
+        .print-block {
+            margin-bottom: 0.8rem !important;
+            page-break-inside: avoid !important;
+        }
+
+        .p-2, .p-3 { padding: 0.5rem 0.75rem !important; }
+        
+        .table { margin-bottom: 0 !important; }
+        .table th, .table td { 
+            padding: 0.4rem 0.5rem !important;
+            font-size: 0.82rem !important; 
+            line-height: 1.3 !important;
+        }
+
+        h5 { 
+            font-size: 0.88rem !important; 
+            margin-bottom: 0.35rem !important; 
+        }
+
+        .print-header-row { 
+            display: flex !important; 
+            flex-direction: row !important; 
+            align-items: center !important; 
+            justify-content: space-between !important;
+            padding: 0.6rem 0.8rem !important; 
+            margin-bottom: 0.8rem !important;
+            text-align: left !important;
+            width: 100% !important;
+        }
+
+        .print-header-left {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            gap: 1rem !important;
+            width: 75% !important;
+            text-align: left !important;
+        }
+
+        .print-header-right {
+            width: 25% !important;
+            text-align: right !important;
+            margin-top: 0 !important;
+        }
+
+        .print-logo { 
+            display: block !important;
+            max-height: 65px !important; 
+            width: auto !important;
+            max-width: 170px !important;
+        }
+
+        .signature-row {
+            margin-top: 2rem !important;
+            padding-top: 0.5rem !important;
+            padding-bottom: 0.5rem !important;
+            page-break-inside: avoid !important;
+        }
+    }
+</style>
+
+<div class="container print-a4-container my-2 my-md-3" style="max-width: 960px;">
+    
+    <div class="print-body-content">
+        <!-- CABEÇALHO DA EMPRESA -->
+        <div class="row align-items-center print-header-row print-block p-2 p-md-3 mb-3 bg-white rounded border border-2 border-primary-subtle shadow-sm g-2">
+            <!-- LOGO E DADOS DA EMPRESA AGRUPADOS À ESQUERDA -->
+            <div class="col-12 col-md-9 d-flex flex-column flex-md-row align-items-center gap-3 text-center text-md-start print-header-left">
+                <img src="{{ company.logo.url }}" alt="Logo" class="img-fluid print-logo flex-shrink-0" style="max-height: 70px; width: auto;">
+                
+                <div class="font-monospace text-uppercase">
+                    <h6 class="fw-bold text-dark mb-1" style="font-size: 0.95rem; letter-spacing: 0.5px;">{{company.name}}</h6>
+                    <p class="text-secondary mb-0 lh-sm" style="font-size: 0.72rem;">
+                        CNPJ: {{ company.document }} | Insc.Estadual: {{ company.state_registration|default:"-" }}<br>
+                        {{ company.address }} - {{ company.district }} - {{ company.city }} / {{ company.uf }} | CEP: {{ company.cep }}<br>
+                        <i class="bi bi-telephone-fill"></i> {{ company.contact }}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Nº DA ORDEM DE SERVIÇO À DIREITA -->
+            <div class="col-12 col-md-3 text-center text-md-end mt-2 mt-md-0 print-header-right">
+                <div class="bg-light border border-primary-subtle rounded px-3 py-2 font-monospace text-center shadow-sm d-inline-block w-100">
+                    <span class="d-block text-muted text-uppercase fw-semibold" style="font-size: 0.68rem; letter-spacing: 1px; line-height: 1.1;">Ordem de Serviço</span>
+                    <span class="fs-3 fw-bold text-primary" style="letter-spacing: 0.5px;">{{ object.id|stringformat:"05d" }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- BARRA DE AÇÕES (APENAS NA TELA) -->
+        <div class="row align-items-center pb-2 mb-2 d-print-none">
+            <div class="col text-end d-flex gap-2 justify-content-end">
+                <button onclick="window.print();" class="btn btn-sm btn-outline-primary px-3">
+                    <i class="bi bi-printer"></i> Imprimir
+                </button>
+                {% if user.is_staff %}
+                <a href="{% url 'os_update' object.pk %}" class="btn btn-sm btn-warning px-3">
+                    <i class="bi bi-pencil-square"></i> Editar
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- 01. IDENTIFICAÇÃO DO CLIENTE -->
+        <div class="mb-3 print-block">
+            <h5 class="text-primary fw-bold text-uppercase small mb-1">
+                <i class="bi bi-person-fill"></i> 01. Identificação do Cliente
+            </h5>
+            <div class="p-2 bg-white rounded border border-primary-subtle shadow-sm">
+                <table class="table table-sm table-bordered mb-0 bg-white font-monospace text-uppercase align-middle">
+                    <tbody>
+                        <tr><th class="bg-light text-secondary fw-medium ps-2 py-2" style="width: 25%;">Razão Social:</th><td class="fw-bold text-dark py-2 ps-2">{{ object.client.name }}</td></tr>
+                        <tr><th class="bg-light text-secondary fw-medium ps-2 py-2">CNPJ/CPF:</th><td class="fw-bold text-dark py-2 ps-2">{{ object.client.document }}</td></tr>
+                        <tr><th class="bg-light text-secondary fw-medium ps-2 py-2">Insc.Est.:</th><td class="fw-bold text-dark py-2 ps-2">{{ object.client.state_registration|default:"-" }}</td></tr>
+                        <tr><th class="bg-light text-secondary fw-medium ps-2 py-2">Endereço:</th><td class="fw-bold text-dark py-2 ps-2">{{ object.client.address|default:"-" }}, {{ object.client.district|default:"-" }}</td></tr>
+                        <tr><th class="bg-light text-secondary fw-medium ps-2 py-2">Cidade/UF:</th><td class="fw-bold text-dark py-2 ps-2">{{ object.client.city|default:"-" }} - {{ object.client.uf|default:"-" }}</td></tr>
+                        <tr><th class="bg-light text-secondary fw-medium ps-2 py-2">CEP:</th><td class="fw-bold text-dark py-2 ps-2">{{ object.client.cep|default:"-" }}</td></tr>
+                        <tr><th class="bg-light text-secondary fw-medium ps-2 py-2">Contato:</th><td class="fw-bold text-dark py-2 ps-2">{{ object.client.contact|default:"-" }}</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 02. BALANÇA -->
+        <div class="mb-3 print-block">
+            <h5 class="text-primary fw-bold text-uppercase small mb-1">
+                <i class="bi bi-scale"></i> 02. Balança
+            </h5>
+            <div class="p-2 bg-white rounded border border-primary-subtle shadow-sm">
+                <table class="table table-sm table-bordered mb-0 bg-white font-monospace text-uppercase align-middle">
+                    <tbody>
+                        <tr><th class="bg-light text-secondary fw-medium ps-2 py-2" style="width: 25%;">Marca / Modelo:</th><td class="fw-bold text-dark py-2 ps-2">{{ object.scale.brand|default:"-" }} / {{ object.scale.model|default:"-" }}</td></tr>
+                        <tr><th class="bg-light text-secondary fw-medium ps-2 py-2">Nº de Série:</th><td class="fw-bold text-dark py-2 ps-2">{{ object.scale.serie|default:"-" }}</td></tr>
+                        <tr><th class="bg-light text-secondary fw-medium ps-2 py-2">Capacidade Max:</th><td class="fw-bold text-dark py-2 ps-2">{{ object.scale.capacity|default:"-" }} {{ object.scale.unit|default:"-" }}</td></tr>
+                        <tr><th class="bg-light text-secondary fw-medium ps-2 py-2">E(kg):</th><td class="fw-bold text-dark py-2 ps-2">{{ object.scale.division|default:"-" }}kg</td></tr>
+                        <tr><th class="bg-light text-secondary fw-medium ps-2 py-2">Tag:</th><td class="fw-bold text-dark py-2 ps-2">{{ object.scale.tag|default:"-" }}</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 03. SERVIÇOS EXECUTADOS -->
+        <div class="mb-3 print-block">
+            <h5 class="text-primary fw-bold text-uppercase small mb-1">
+                <i class="bi bi-tools"></i> 03. Serviços Executados
+            </h5>
+            <div class="p-2 p-md-3 bg-white rounded border border-primary-subtle shadow-sm">
+                <div class="mb-3 font-monospace text-uppercase row g-2 row-cols-2">
+                    <div class="col d-flex align-items-center">
+                        <i class="bi {% if object.service1 %}bi-check-square-fill text-primary{% else %}bi-square text-dark{% endif %} me-2 fs-6"></i>
+                        <span class="fw-bold text-dark">Manutenção corretiva</span>
+                    </div>
+                    <div class="col d-flex align-items-center">
+                        <i class="bi {% if object.service2 %}bi-check-square-fill text-primary{% else %}bi-square text-dark{% endif %} me-2 fs-6"></i>
+                        <span class="fw-bold text-dark">Manutenção preventiva</span>
+                    </div>
+                    <div class="col d-flex align-items-center">
+                        <i class="bi {% if object.service3 %}bi-check-square-fill text-primary{% else %}bi-square text-dark{% endif %} me-2 fs-6"></i>
+                        <span class="fw-bold text-dark">Certificação com pesos padrão</span>
+                    </div>
+                    <div class="col d-flex align-items-center">
+                        <i class="bi {% if object.service4 %}bi-check-square-fill text-primary{% else %}bi-square text-dark{% endif %} me-2 fs-6"></i>
+                        <span class="fw-bold text-dark">Ajustes com pesos padrão</span>
+                    </div>
+                    <div class="col d-flex align-items-center">
+                        <i class="bi {% if object.service5 %}bi-check-square-fill text-primary{% else %}bi-square text-dark{% endif %} me-2 fs-6"></i>
+                        <span class="fw-bold text-dark">Certificado conformidade</span>
+                    </div>
+                    <div class="col d-flex align-items-center">
+                        <i class="bi {% if object.service6 %}bi-check-square-fill text-primary{% else %}bi-square text-dark{% endif %} me-2 fs-6"></i>
+                        <span class="fw-bold text-dark">Reparo em plataforma / estrutura</span>
+                    </div>
+                    <div class="col d-flex align-items-center">
+                        <i class="bi {% if object.service7 %}bi-check-square-fill text-primary{% else %}bi-square text-dark{% endif %} me-2 fs-6"></i>
+                        <span class="fw-bold text-dark">Reparo dispositivo eletroeletrônico</span>
+                    </div>
+                    <div class="col d-flex align-items-center">
+                        <i class="bi {% if object.service8 %}bi-check-square-fill text-primary{% else %}bi-square text-dark{% endif %} me-2 fs-6"></i>
+                        <span class="fw-bold text-dark">Reparo em comunicação / externos</span>
+                    </div>
+                </div>
+
+                <div class="table-responsive mt-2">
+                    <table class="table table-sm table-bordered mb-0 align-middle font-monospace text-uppercase">
+                        <tbody>
+                            <tr>
+                                <th class="bg-light text-secondary fw-medium ps-2 py-2" style="width: 25%;">OBSERVAÇÕES:</th>
+                                <td class="p-2 fw-bold text-dark text-wrap ps-2">{{ object.observation|default:"Nenhuma observação registrada." }}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light text-secondary fw-medium ps-2 py-2" style="width: 25%;">NÚMERO DE SELO:</th>
+                                <td class="p-2 fw-bold text-dark text-wrap ps-2">{{ object.stamp|default:"Nenhum selo utilizado." }}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light text-secondary fw-medium ps-2 py-2">DATA DO SERVIÇO:</th>
+                                <td class="p-2 fw-bold text-dark ps-2">{{ object.date|date:"d/m/Y H:i" }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 04. INFORMAÇÕES COMPLEMENTARES -->
+        <div class="mb-3 print-block">
+            <h5 class="text-primary fw-bold text-uppercase small mb-1">
+                <i class="bi bi-info-circle"></i> 04. Informações Complementares
+            </h5>
+            <div class="p-2 p-md-3 bg-white rounded border border-primary-subtle shadow-sm">
+                <div class="row g-2 font-monospace">
+                    <div class="col-6">
+                        <div class="p-2 px-3 border rounded {% if object.verified %}bg-primary-subtle border-primary-subtle{% else %}bg-light{% endif %} d-flex align-items-center justify-content-between">
+                            <span class="fw-bold text-secondary text-uppercase">Equipamento Verificado pelo INMETRO este ano</span>
+                            <span class="badge {% if object.verified %}bg-success{% else %}bg-secondary{% endif %} text-uppercase fs-6">{% if object.verified %}Sim{% else %}Não{% endif %}</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-2 px-3 border rounded {% if object.new_instalation %}bg-primary-subtle border-primary-subtle{% else %}bg-light{% endif %} d-flex align-items-center justify-content-between">
+                            <span class="fw-bold text-secondary text-uppercase">Instalação Nova</span>
+                            <span class="badge {% if object.new_instalation %}bg-success{% else %}bg-secondary{% endif %} text-uppercase fs-6">{% if object.new_instalation %}Sim{% else %}Não{% endif %}</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-2 px-3 border rounded {% if object.food %}bg-primary-subtle border-primary-subtle{% else %}bg-light{% endif %} d-flex align-items-center justify-content-between">
+                            <span class="fw-bold text-secondary text-uppercase">Refeição</span>
+                            <span class="badge {% if object.food %}bg-success{% else %}bg-secondary{% endif %} text-uppercase fs-6">{% if object.food %}Sim{% else %}Não{% endif %}</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-2 px-3 border rounded {% if object.host %}bg-primary-subtle border-primary-subtle{% else %}bg-light{% endif %} d-flex align-items-center justify-content-between">
+                            <span class="fw-bold text-secondary text-uppercase">Hospedagem</span>
+                            <span class="badge {% if object.host %}bg-success{% else %}bg-secondary{% endif %} text-uppercase fs-6">{% if object.host %}Sim{% else %}Não{% endif %}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 05. PEÇAS UTILIZADAS -->
+        <div class="mb-3 print-block">
+            <h5 class="text-success fw-bold text-uppercase small mb-1">
+                <i class="bi bi-box-seam-fill"></i> 05. Peças Utilizadas
+            </h5>
+            <div class="p-2 bg-success-subtle rounded border-start border-4 border-success shadow-sm">
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered align-middle mb-0 bg-white font-monospace text-uppercase">
+                        <thead>
+                            <tr class="text-success fw-bold text-uppercase bg-success bg-opacity-10">
+                                <th style="width: 15%;" class="ps-2 py-2">Código</th>
+                                <th style="width: 10%;" class="text-center py-2">Qtd</th>
+                                <th style="width: 20%;" class="py-2">Série</th>
+                                <th style="width: 40%;" class="py-2">Descrição</th>
+                                <th style="width: 15%;" class="text-center py-2">Base Troca</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for part in parts_useds %}
+                            <tr>
+                                <td class="ps-2 fw-bold text-secondary py-2">{{ part.code|default:"-" }}</td>
+                                <td class="text-center fw-bold py-2">{{ part.amount|default:"-" }}</td>
+                                <td class="py-2">{{ part.serie|default:"-" }}</td>
+                                <td class="text-wrap py-2">{{ part.description|default:"-" }}</td>
+                                <td class="text-center py-2">
+                                    {% if part.base %}
+                                        <span class="text-success fw-bold"><i class="bi bi-check-circle-fill"></i> SIM</span>
+                                    {% else %}
+                                        <span class="text-muted"><i class="bi bi-x-circle"></i> NÃO</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center py-2 text-muted">Nenhuma peça utilizada nesta manutenção.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 06. TEMPO DE SERVIÇO -->
+        <div class="mb-3 print-block">
+            <h5 class="text-success fw-bold text-uppercase small mb-1">
+                <i class="bi bi-clock-fill"></i> 06. Tempo de Serviço
+            </h5>
+            <div class="p-2 bg-success-subtle rounded border-start border-4 border-success shadow-sm">
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered align-middle mb-0 bg-white font-monospace text-uppercase">
+                        <thead>
+                            <tr class="text-success fw-bold text-uppercase bg-success bg-opacity-10">
+                                <th style="width: 15%;" class="ps-2 py-2">Dia</th>
+                                <th style="width: 15%;" class="text-center py-2">Início</th>
+                                <th style="width: 15%;" class="text-center py-2">Parada</th>
+                                <th style="width: 25%;" class="text-center py-2">Total Horas</th>
+                                <th style="width: 15%;" class="text-center py-2">Carro</th>
+                                <th style="width: 15%;" class="text-center py-2">Caminhão</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for time in time_service %}
+                            <tr>
+                                <td class="ps-2 fw-bold text-secondary py-2">{{ time.day|date:"d/m/Y"|default:time.day|default:"-" }}</td>
+                                <td class="text-center py-2">{{ time.start|default:"-" }}</td>
+                                <td class="text-center py-2">{{ time.stop|default:"-" }}</td>
+                                <td class="text-center fw-bold py-2">{{ time.total_hours|default:"-" }}</td>
+                                <td class="text-center py-2">{{ time.car|default:"-" }}</td>
+                                <td class="text-center py-2">{{ time.truck|default:"-" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center py-2 text-muted">Nenhum tempo de serviço registrado.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ASSINATURAS -->
+    <div class="row text-center g-2 signature-row">
+        <div class="col-6 d-flex flex-column justify-content-end align-items-center">
+            <div class="text-dark fw-bolder text-uppercase lh-1 mb-1" style="font-size: 0.9rem; letter-spacing: 0.5px;">
+                {{ object.user.get_full_name|default:object.user.username }}
+            </div>
+            <div class="w-100 border-top border-secondary border-opacity-50 pt-1 text-muted fw-semibold text-uppercase" style="max-width: 260px; letter-spacing: 1px; font-size: 0.68rem;">
+                Responsável Técnico
+            </div>
+        </div>
+
+        <div class="col-6 d-flex flex-column justify-content-end align-items-center">
+            <div class="mb-1 d-flex align-items-center justify-content-center" style="height: 52px; min-width: 260px;">
+                {% if object.signature %}
+                    <img src="{{ object.signature }}" alt="Assinatura" style="max-height: 100%; max-width: 100%; object-fit: contain;">
+                {% else %}
+                    <span class="text-muted small font-monospace d-print-none" style="font-size: 0.68rem;">Sem assinatura digital</span>
+                {% endif %}
+            </div>
+            <div class="w-100 border-top border-secondary border-opacity-50 pt-1 text-muted fw-semibold text-uppercase" style="max-width: 260px; letter-spacing: 1px; font-size: 0.68rem;">
+                Assinatura do Cliente
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

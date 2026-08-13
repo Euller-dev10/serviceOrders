@@ -1,0 +1,68 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block content %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link rel="stylesheet" href="{% static 'css/style_new_scale.css' %}?v=3.0">
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            
+            <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden main-form-card">
+                
+                <div class="card-header bg-white border-bottom p-4 d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-3 me-3 d-flex align-items-center justify-content-center header-icon-box">
+                            <i class="fas fa-user-plus fs-4"></i>
+                        </div>
+                        <div>
+                            <span class="text-muted small text-uppercase tracking-wider fw-bold">Acesso & Segurança</span>
+                            <h2 class="h4 mb-0 text-dark fw-bold">Cadastrar Novo Usuário</h2>
+                        </div>
+                    </div>
+                    
+                    <a href="/" class="btn btn-sm btn-outline-secondary rounded-3 px-3 py-2 fw-semibold d-inline-flex align-items-center gap-2 back-list-btn">
+                        <i class="fas fa-home small"></i> Início
+                    </a>
+                </div>
+
+                <form method="post" action="{% url 'register' %}" class="card-body p-4 bootstrap-standard-form {% if user_form.errors %}was-validated{% endif %}" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="row g-3">
+                        {% for field in user_form %}
+                            <div class="col-12 mb-2">
+                                <label for="{{ field.id_for_label }}" class="form-label fw-bold text-secondary small">
+                                    {{ field.label }}
+                                </label>
+                                <div class="bootstrap-input-target position-relative">
+                                    {{ field }}
+                                    
+                                    {% if field.errors %}
+                                        <div class="text-danger small mt-1 font-monospace" style="font-size: 0.8rem; line-height: 1.4;">
+                                            <i class="fas fa-exclamation-circle me-1"></i>
+                                            {% for error in field.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="d-flex justify-content-end border-top pt-4 mt-4">
+                        <button type="submit" class="btn btn-primary rounded-3 px-5 py-2 d-inline-flex align-items-center gap-2 fw-semibold shadow-sm transition-btn">
+                            <i class="fas fa-check fs-7"></i> FINALIZAR CADASTRO
+                        </button>
+                    </div>
+                </form>
+                
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

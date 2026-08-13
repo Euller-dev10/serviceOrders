@@ -1,0 +1,109 @@
+{% extends "index.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/style_new_client.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-10">
+            
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+                
+                <div class="card-header bg-white border-bottom p-4 d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-3 me-3 d-flex align-items-center justify-content-center header-icon-box">
+                            <i class="fas fa-user-edit fs-4"></i>
+                        </div>
+                        <div>
+                            <span class="text-muted small text-uppercase tracking-wider fw-bold">Painel de Controle</span>
+                            <h2 class="h4 mb-0 text-dark fw-bold">Editar Cliente: {{ client.name }}</h2>
+                        </div>
+                    </div>
+                    
+                    <a href="{% url 'client_detail' client.id %}" class="btn btn-sm btn-outline-secondary rounded-3 px-3 d-inline-flex align-items-center gap-2 transition-btn">
+                        <i class="fas fa-arrow-left small"></i> Voltar para Detalhes
+                    </a>
+                </div>
+
+                <form method="post" class="card-body p-4 custom-bootstrap-form">
+                    {% csrf_token %}
+                    {% if form.errors %}
+                    <div class="alert alert-danger border-0 rounded-3 shadow-sm mb-4">
+                        <div class="fw-bold mb-2"><i class="fas fa-bug me-2"></i> Erro de Validação no Formulário:</div>
+                        <ul class="mb-0 small font-monospace">
+                            {% for field, errors in form.errors.items %}
+                                <li><strong>Campo [{{ field }}]:</strong> {{ errors|striptags }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="row g-3">
+                        
+                        <div class="col-12 mb-2">
+                            <label class="form-label fw-bold text-secondary small">Razão Social / Nome</label>
+                            <div class="input-wrapper">{{ form.name }}</div>
+                        </div>
+
+                        <div class="col-12 col-md-6 mb-2">
+                            <label class="form-label fw-bold text-secondary small">CNPJ / CPF</label>
+                            <div class="input-wrapper">{{ form.document }}</div>
+                        </div>
+
+                        <div class="col-12 col-md-6 mb-2">
+                            <label class="form-label fw-bold text-secondary small">Insc. Estadual</label>
+                            <div class="input-wrapper">{{ form.state_registration }}</div>
+                        </div>
+
+                        <div class="col-12 mb-2">
+                            <label class="form-label fw-bold text-secondary small">Rua / Endereço</label>
+                            <div class="input-wrapper">{{ form.address }}</div>
+                        </div>
+
+                        <div class="col-12 col-md-6 mb-2">
+                            <label class="form-label fw-bold text-secondary small">Bairro</label>
+                            <div class="input-wrapper">{{ form.district }}</div>
+                        </div>
+
+                        <div class="col-12 col-md-6 mb-2">
+                            <label class="form-label fw-bold text-secondary small">Cidade</label>
+                            <div class="input-wrapper">{{ form.city }}</div>
+                        </div>
+
+                        <div class="col-12 col-md-4 mb-2">
+                            <label class="form-label fw-bold text-secondary small">UF</label>
+                            <div class="input-wrapper">{{ form.uf }}</div>
+                        </div>
+
+                        <div class="col-12 col-md-8 mb-2">
+                            <label class="form-label fw-bold text-secondary small">CEP</label>
+                            <div class="input-wrapper">{{ form.cep }}</div>
+                        </div>
+
+                        <div class="col-12 col-md-6 mb-2">
+                            <label class="form-label fw-bold text-secondary small">Contato / Telefone</label>
+                            <div class="input-wrapper">{{ form.contact }}</div>
+                        </div>
+
+                        <div class="col-12 col-md-6 mb-2">
+                            <label class="form-label fw-bold text-secondary small">E-mail</label>
+                            <div class="input-wrapper">{{ form.email }}</div>
+                        </div>
+
+                    </div>
+
+                    <div class="d-flex justify-content-end border-top pt-4 mt-4">
+                        <button type="submit" class="btn btn-primary rounded-3 px-4 py-2 d-inline-flex align-items-center gap-2 fw-semibold shadow-sm transition-btn">
+                            <i class="fas fa-save fs-7"></i> SALVAR ALTERAÇÕES
+                        </button>
+                    </div>
+                </form>
+                
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,146 @@
+/* Customizações Estruturais do Visual Premium */
+.header-icon-box {
+    width: 54px;
+    height: 54px;
+    min-width: 54px;
+}
+
+.table-spec th, 
+.table-client th {
+    width: 35%;
+    color: #495057;
+    font-size: 0.82rem;
+    font-weight: 500;
+}
+
+.table-spec td, 
+.table-client td {
+    font-weight: 600;
+    color: #212529;
+}
+
+.services-layout {
+    font-size: 0.95rem;
+    color: #212529;
+    line-height: 1.8;
+}
+
+.service-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.4rem;
+}
+
+.simulated-checkbox {
+    font-size: 1.2rem;
+}
+
+.observation-box {
+    min-height: 48px;
+    font-size: 0.90rem;
+    line-height: 1.4;
+}
+
+.signature-line {
+    max-width: 240px; 
+    font-size: 0.72rem;
+    letter-spacing: 0.05rem;
+}
+
+/* REGRAS DE IMPRESSÃO OTIMIZADAS CONTRA SOBREPOSIÇÃO */
+@media print {
+    #sidebar-wrapper, 
+    .navbar, 
+    .d-print-none, 
+    button, 
+    .btn {
+        display: none !important;
+    }
+    
+    body,
+    #page-content-wrapper, 
+    .container,
+    .main-os-container {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        background-color: #fff !important;
+    }
+    
+    /* Reset de backgrounds de cards para economizar tinta e estruturar layout */
+    .card {
+        border: none !important;
+        box-shadow: none !important;
+        background-color: transparent !important;
+        padding: 0 !important;
+    }
+    
+    h1.h2 { 
+        font-size: 1.25rem !important; 
+        margin-bottom: 0.1rem !important; 
+    }
+    
+    .section-title { 
+        font-size: 0.85rem !important; 
+        margin-bottom: 0.4rem !important; 
+        margin-top: 0.6rem !important; 
+    }
+    
+    .badge { 
+        font-size: 0.65rem !important; 
+        padding: 0.2rem 0.4rem !important; 
+    }
+
+    /* Força o empilhamento sem quebras desordenadas */
+    .print-stack-row {
+        display: block !important;
+        width: 100% !important;
+    }
+    
+    .print-stack-col {
+        display: block !important;
+        width: 100% !important;
+        margin-bottom: 1rem !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+
+    .services-layout {
+        font-size: 0.85rem !important;
+        line-height: 1.4 !important;
+    }
+
+    .table-spec th, 
+    .table-client th, 
+    .table-spec td, 
+    .table-client td {
+        font-size: 0.78rem !important;
+        padding: 3px 6px !important;
+    }
+
+    .observation-container {
+        margin-top: 0.6rem !important;
+    }
+
+    .observation-box {
+        padding: 0.5rem !important;
+        font-size: 0.8rem !important;
+    }
+
+    .signature-section {
+        page-break-inside: avoid;
+        break-inside: avoid;
+        margin-top: 2rem !important;
+    }
+
+    @page {
+        size: A4;
+        margin: 0.8cm 1.2cm;
+    }
+
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+}

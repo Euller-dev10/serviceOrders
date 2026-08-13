@@ -1,0 +1,106 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Font Awesome para os ícones (Garante consistência) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<div class="container py-4">
+    
+    <!-- Cabeçalho Estilizado no mesmo padrão visual do sistema -->
+    <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden mb-4">
+        <div class="card-body p-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <div class="d-flex align-items-center">
+                <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-3 me-3 d-flex align-items-center justify-content-center" style="width: 54px; height: 54px;">
+                    <i class="fas fa-balance-scale fs-4"></i>
+                </div>
+                <div>
+                    <span class="text-muted small text-uppercase tracking-wider fw-bold">Equipamentos</span>
+                    <h2 class="h4 mb-0 text-dark fw-bold">Balanças Cadastradas</h2>
+                </div>
+            </div>
+            
+            <!-- Campo de Busca Minimalista Perfeitamente Alinhado -->
+            <div class="col-12 col-md-5 col-lg-4">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0 rounded-3 text-muted ps-3">
+                        <i class="fas fa-search"></i>
+                    </span>
+                    <input type="text" id="searchInput" class="form-control border-start-0 rounded-3 py-2" placeholder="Buscar fabricante, modelo ou série...">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabela Estilo Card Moderno -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" id="clientTable">
+                <thead class="bg-light border-bottom text-secondary">
+                    <tr>
+                        <th class="ps-4 py-3 text-uppercase small fw-bold tracking-wider" style="font-size: 0.8rem;">Fabricante</th>
+                        <th class="py-3 text-uppercase small fw-bold tracking-wider" style="font-size: 0.8rem;">Modelo</th>
+                        <th class="py-3 text-uppercase small fw-bold tracking-wider" style="font-size: 0.8rem;">Série</th>
+                        <th class="py-3 text-uppercase small fw-bold tracking-wider" style="font-size: 0.8rem;">Capacidade</th>
+                        <th class="py-3 text-uppercase small fw-bold tracking-wider" style="font-size: 0.8rem;">E (kg)</th>
+                        <th class="py-3 text-uppercase small fw-bold tracking-wider" style="font-size: 0.8rem;">Tag</th>
+                        <th class="text-center py-3 text-uppercase small fw-bold tracking-wider" style="font-size: 0.8rem;">Ação</th>
+                        <th class="text-center py-3 text-uppercase small fw-bold tracking-wider" style="font-size: 0.8rem;">Ver detalhes do equipamento</th>
+                    </tr>
+                </thead>
+                <tbody id="clientTableBody">
+                    {% for scale in scales %}
+                    <tr>
+                        <td class="ps-4 py-3">
+                            <span class="text-dark fw-semibold">{{ scale.brand }}</span>
+                        </td>
+                        <td class="text-secondary py-3">{{ scale.model }}</td>
+                        <td class="text-secondary py-3">
+                            <span class="badge bg-light text-dark border rounded-3 fw-medium px-2 py-1.5">
+                                {{ scale.serie }}
+                            </span>
+                        </td>
+                        <td class="text-secondary py-3">{{ scale.capacity|default:"-" }} {{ scale.unit }}</td>
+                        <td class="text-secondary py-3">{{ scale.division|default:"-" }}</td>
+                        <td class="py-3">
+                            {% if scale.tag %}
+                                <span class="badge bg-primary bg-opacity-10 text-primary rounded-3 fw-semibold px-2 py-1.5">
+                                    {{ scale.tag }}
+                                </span>
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center pe-4 py-3">
+                            <!-- Link para gerar O.S atualizado com as novas classes de botão -->
+                            <a href="{% url 'service_order' scale.client.id scale.id %}" class="btn btn-sm btn-outline-primary rounded-3 px-3 fw-semibold d-inline-flex align-items-center gap-1">
+                                <i class="fas fa-external-link-alt small"></i> Gerar O.S
+                            </a>
+                        </td>
+                        <td class="text-center pe-4 py-3">
+                            <!-- Link para gerar O.S atualizado com as novas classes de botão -->
+                            <a href="{% url 'scale_detail' pk=scale.id %}" class="btn btn-sm btn-outline-primary rounded-3 px-3 fw-semibold d-inline-flex align-items-center gap-1">
+                                <i class="fas fa-external-link-alt small"></i> Ver detalhes
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <!-- Ajustado para colspan 7 para cobrir todas as colunas da tabela -->
+                        <td colspan="7" class="text-center py-5 text-muted">
+                            <div class="text-center opacity-50 mb-2">
+                                <i class="fas fa-balance-scale-left fa-2x"></i>
+                            </div>
+                            <p class="mb-0 fw-medium">Nenhuma balança encontrada.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Mantém seu script original de filtro -->
+<script src="{% static 'js/filter.js' %}"></script>
+{% endblock %}

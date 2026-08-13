@@ -1,0 +1,82 @@
+/* Customizações e Consistência da Tabela de OS */
+.header-icon-box {
+    width: 54px; 
+    height: 54px;
+}
+
+.custom-os-table tbody tr {
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.custom-os-table tbody tr:hover {
+    background-color: rgba(248, 249, 250, 0.85) !important;
+}
+
+/* Limitadores de texto para evitar quebras desnecessárias em telas médias */
+.custom-text-truncate {
+    max-width: 280px;
+}
+
+.custom-text-truncate-sub {
+    max-width: 220px;
+    font-size: 0.78rem !important;
+}
+
+/* Ajustes finos nos inputs de borda mesclada padrão do sistema */
+.main-header-card .input-group {
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem !important;
+    overflow: hidden;
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
+}
+
+.main-header-card .form-control:focus {
+    box-shadow: none;
+    background-color: #fff;
+}
+
+/* Regras de Layout e Otimização para Impressão */
+@media print {
+    #sidebar-wrapper, 
+    .navbar, 
+    .d-print-none, 
+    .btn, 
+    .action-buttons-group,
+    input,
+    .input-group {
+        display: none !important;
+    }
+    
+    body,
+    #page-content-wrapper, 
+    .container {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        background-color: #fff !important;
+    }
+    
+    .card,
+    .table-main-card {
+        border: none !important;
+        box-shadow: none !important;
+        background-color: transparent !important;
+    }
+    
+    .table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+    }
+    
+    .table th, 
+    .table td {
+        padding: 8px !important;
+        border-bottom: 1px solid #ddd !important;
+    }
+
+    @page {
+        size: A4 landscape;
+        margin: 1.2cm;
+    }
+}

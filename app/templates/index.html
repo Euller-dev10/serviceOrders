@@ -1,0 +1,126 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Ordem de Serviço WEB</title>
+        <link rel="icon" type="image/x-icon" href="{% static 'assets/favicon.ico' %}" />
+        <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
+        
+    </head>
+    <body>
+      
+        <div class="d-flex" id="wrapper">
+            <div class="border-end bg-white d-flex flex-column" id="sidebar-wrapper" style="min-height: 100vh;">
+                <!-- LOGO AFERIX ADICIONADA NA SIDEBAR -->
+                <div class="sidebar-heading border-bottom bg-light text-center py-3">
+                    <img src="{% static 'img/logo_euller.png' %}" alt="Aferix" class="img-fluid" style="max-height: 50px;">
+                </div>
+                
+                <div class="list-group list-group-flush flex-grow-1" id="sidebarAccordion">
+                    {% if user.is_authenticated %}
+                    <div>
+                        <a class="list-group-item list-group-item-action list-group-item-light p-3 d-flex align-items-center accordion-toggle collapsed" 
+                           data-bs-toggle="collapse" 
+                           href="#menuOS" 
+                           role="button" 
+                           aria-expanded="false" 
+                           aria-controls="menuOS">
+                            Ordens de Serviço
+                        </a>
+                        <div class="collapse sidebar-submenu" id="menuOS" data-bs-parent="#sidebarAccordion">
+                            <div class="list-group list-group-flush">
+                                <a href="{% url 'search_client' %}" class="list-group-item list-group-item-action list-group-item-light border-0">Gerar O.S.</a>
+                                <a href="{% url 'list_os' %}" class="list-group-item list-group-item-action list-group-item-light border-0">Suas Ordens</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <a class="list-group-item list-group-item-action list-group-item-light p-3 d-flex align-items-center accordion-toggle collapsed" 
+                           data-bs-toggle="collapse" 
+                           href="#menuClientes" 
+                           role="button" 
+                           aria-expanded="false" 
+                           aria-controls="menuClientes">
+                            Clientes
+                        </a>
+                        <div class="collapse sidebar-submenu" id="menuClientes" data-bs-parent="#sidebarAccordion">
+                            <div class="list-group list-group-flush">
+                                <a href="{% url 'search_client' %}" class="list-group-item list-group-item-action list-group-item-light border-0">Todos Clientes</a>
+                                <a href="{% url 'new_client' %}" class="list-group-item list-group-item-action list-group-item-light border-0">Novo Cliente</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <a class="list-group-item list-group-item-action list-group-item-light p-3 d-flex align-items-center accordion-toggle collapsed" 
+                           data-bs-toggle="collapse" 
+                           href="#menuBalancas" 
+                           role="button" 
+                           aria-expanded="false" 
+                           aria-controls="menuBalancas">
+                            Balanças
+                        </a>
+                        <div class="collapse sidebar-submenu" id="menuBalancas" data-bs-parent="#sidebarAccordion">
+                            <div class="list-group list-group-flush">
+                                <a href="{% url 'search_scale' %}" class="list-group-item list-group-item-action list-group-item-light border-0">Todas as Balanças</a>
+                                <a href="{% url 'new_scale' %}" class="list-group-item list-group-item-action list-group-item-light border-0">Nova Balança</a>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div id="page-content-wrapper">
+                <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+                    <div class="container-fluid">
+                        
+                        <button class="btn btn-primary" id="sidebarToggle">Menu</button>
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+            
+                        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                            <ul class="navbar-nav ms-auto mt-2 mt-lg-0 align-items-center">
+                                <li class="nav-item active"><a class="nav-link me-3" href="{% url 'home' %}">Home</a></li>
+                                {% if not user.is_authenticated %}
+                                    <li class="nav-item active"><a class="nav-link me-3" href="{% url 'login' %}">Login</a></li>
+                                {% endif %}
+                                
+                                <li class="nav-item dropdown">
+                                    {% if user.is_authenticated %}
+                                        <a class="nav-link dropdown-toggle d-flex align-items-center" id="navbarDropdownPerfil" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-person-circle me-1" viewBox="0 0 16 16">
+                                                <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                                                <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+                                            </svg>
+                                            Meu Perfil
+                                        </a>
+                                            
+                                            <div class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="navbarDropdownPerfil">
+                                                    <a class="dropdown-item" href="#!">Minha Conta</a>
+                                                    <div class="dropdown-divider"></div>
+                                                    <a class="dropdown-item text-danger" href="{% url 'logout' %}">Sair</a>
+                                            </div>
+                                    {% endif %}
+                                </li>
+                                
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+                
+                <div class="container-fluid">
+                    {% block content %}
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="{% static 'js/scripts.js' %}"></script>
+    </body>
+</html>

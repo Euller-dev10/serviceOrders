@@ -1,0 +1,81 @@
+/* ==========================================================================
+   Estilos Globais e Utilitários Auxiliares
+   ========================================================================== */
+.fs-7 { 
+    font-size: 0.75rem !important; 
+}
+
+.tracking-wider { 
+    letter-spacing: 0.05em; 
+}
+
+/* Tamanho fixo do ícone do cabeçalho do cliente */
+.client-icon-wrapper {
+    width: 54px;
+    height: 54px;
+}
+
+/* Largura fixa para alinhar verticalmente os ícones do grid de info */
+.client-info-grid i {
+    width: 20px;
+}
+
+
+/* ==========================================================================
+   Filtro de Busca de Balanças
+   ========================================================================== */
+.busca-balanca-container {
+    max-width: 320px;
+}
+
+.custom-search-input {
+    font-size: 0.875rem;
+}
+
+/* Efeito de foco suave com transição no campo de busca */
+.custom-search-input:focus {
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15) !important;
+    border-color: #86b7fe !important;
+    outline: 0;
+}
+
+
+/* ==========================================================================
+   Tabela Personalizada de Equipamentos
+   ========================================================================== */
+.col-acao {
+    width: 140px;
+}
+
+/* Ícones internos da tabela */
+.custom-table-hover tbody td i {
+    font-size: 0.85rem;
+}
+
+/* Transição suave nas linhas da tabela ao passar o mouse */
+.custom-table-hover tbody tr {
+    transition: background-color 0.15s ease-in-out;
+}
+
+.custom-table-hover tbody tr:hover {
+    background-color: rgba(248, 249, 250, 0.85);
+}
+
+
+/* ==========================================================================
+   Componentes Interativos e Estados Intermediários
+   ========================================================================== */
+/* Animação e microinteração no botão "Nova O.S" */
+.transition-btn {
+    transition: all 0.2s ease-in-out;
+}
+
+.transition-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(13, 110, 253, 0.2) !important;
+}
+
+/* Centralização do ícone no card de estado vazio */
+.empty-state-card .icon-box {
+    line-height: 1;
+}
