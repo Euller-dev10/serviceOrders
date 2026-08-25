@@ -15,7 +15,7 @@ class UnitAdmin(admin.ModelAdmin):
 
 class ScaleAdmin(admin.ModelAdmin):
 
-    list_display = ('brand', 'model', 'serie', 'capacity', 'unit', 'division', 'client')
+    list_display = ('brand', 'model', 'serie', 'capacity', 'unit', 'division', 'portaria', 'client')
     search_fields = ('client', 'serie')
 
 class ServiceOrderAdmin(admin.ModelAdmin):
@@ -49,7 +49,7 @@ class TimeServiceAdmin(admin.ModelAdmin):
     search_fields = ['day', 'start', 'stop', 'total_hours', 'car', 'truck', 'service_order']
 
 class CompanyAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'document', 'state_registration', 'address', 'district', 'city', 'uf', 'cep', 'contact', 'email', 'logo']
+    list_display = ['id', 'name', 'document', 'state_registration', 'address', 'district', 'city', 'uf', 'cep', 'contact', 'email', 'number_register', 'logo']
     search_fields = ['name', 'document', 'city']
 
 

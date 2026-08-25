@@ -180,6 +180,7 @@
         <input type="hidden" name="signature" id="id_signature" value="{{ form.signature.value|default:'' }}">
 
         <!-- CABEÇALHO DA EMPRESA -->
+        <!-- CABEÇALHO DA EMPRESA -->
         <div class="row align-items-center print-header-row print-block p-2 p-md-3 mb-3 bg-white rounded border border-2 border-primary-subtle shadow-sm g-2">
             <!-- LOGO E DADOS DA EMPRESA AGRUPADOS À ESQUERDA -->
             <div class="col-12 col-md-9 d-flex flex-column flex-md-row align-items-center gap-3 text-center text-md-start print-header-left">
@@ -187,11 +188,17 @@
                 
                 <div class="font-monospace text-uppercase">
                     <h6 class="fw-bold text-dark mb-1" style="font-size: 0.95rem; letter-spacing: 0.5px;">{{company.name}}</h6>
-                    <p class="text-secondary mb-0 lh-sm" style="font-size: 0.72rem;">
+                    <p class="text-secondary mb-1 lh-sm" style="font-size: 0.72rem;">
                         CNPJ: {{ company.document }} | Insc.Estadual: {{ company.state_registration|default:"-" }}<br>
                         {{ company.address }} - {{ company.district }} - {{ company.city }} / {{ company.uf }} | CEP: {{ company.cep }}<br>
                         <i class="bi bi-telephone-fill"></i> {{ company.contact }}
                     </p>
+                    <!-- DESTAQUE DO REGISTRO IPEM/PR LOGO ABAIXO DOS DADOS -->
+                    <div class="mt-1">
+                        <span class="badge bg-primary text-white border border-primary rounded-1 px-2 py-1 font-monospace fw-bold" style="font-size: 0.70rem; letter-spacing: 0.5px;">
+                            <i class="bi bi-shield-check"></i> REGISTRO IPEM/PR: {{ company.number_register|default:"00000000" }}
+                        </span>
+                    </div>
                 </div>
             </div>
 
@@ -261,6 +268,7 @@
                         <tr><th class="bg-light text-secondary fw-medium ps-2 py-2">Capacidade Max:</th><td class="fw-bold text-dark py-2 ps-2">{{ os.scale.capacity|default:"-" }} {{ os.scale.unit|default:"-" }}</td></tr>
                         <tr><th class="bg-light text-secondary fw-medium ps-2 py-2">E(kg):</th><td class="fw-bold text-dark py-2 ps-2">{{ os.scale.division|default:"-" }}kg</td></tr>
                         <tr><th class="bg-light text-secondary fw-medium ps-2 py-2">Tag:</th><td class="fw-bold text-dark py-2 ps-2">{{ os.scale.tag|default:"-" }}</td></tr>
+                        <tr><th class="bg-light text-secondary fw-medium ps-2 py-2">Portaria/Ano:</th><td class="fw-bold text-dark py-2 ps-2">{{ os.scale.portaria|default:"-" }}</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -310,6 +318,9 @@
                 <div class="table-responsive mt-2">
                     <table class="table table-sm table-bordered mb-0 align-middle font-monospace text-uppercase">
                         <tbody>
+
+                            <th class="bg-light text-secondary fw-medium ps-2 py-2" style="width: 25%;">NÚMERO DE SELO RETIRADO:</th>
+                                <td class="p-2 fw-bold text-dark text-wrap ps-2">{{ form.stamp_retired}}</td>
                             <tr>
                                 <th class="bg-light text-secondary fw-medium ps-2 py-2" style="width: 25%;">NÚMERO DE SELO:</th>
                                 <td class="p-0 table-stamp-select">
@@ -527,31 +538,43 @@
                 </div>
             </div>
             
-            <div class="col-6 d-flex flex-column justify-content-end align-items-center">
-                {% if form.signature.value %}
-                <div id="saved-signature-block" class="d-flex flex-column align-items-center mb-1">
-                    <div class="saved-signature-container" style="height: 52px; border: none; min-width: 260px;">
-                        <img src="{{ form.signature.value }}" alt="Assinatura do Cliente" class="saved-signature-img">
-                    </div>
-                    <button type="button" id="btn-change-signature" class="btn btn-link btn-sm text-primary mt-1 d-print-none change-sig-btn font-monospace small">
-                        <i class="bi bi-pencil-square"></i> Alterar Assinatura
+    <form id="os-form" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+    <!-- 1. CAMPO OCULTO (Necessário para o JS salvar o valor da assinatura no Django) -->
+        <input type="hidden" name="signature" id="id_signature" value="{{ form.signature.value|default:'' }}">
+
+    <!-- ... Seus outros campos da OS aqui ... -->
+
+    <!-- 2. SEU BLOCO DA ASSINATURA -->
+        <div class="col-6 d-flex flex-column justify-content-end align-items-center">
+            {% if form.signature.value %}
+            <div id="saved-signature-block" class="d-flex flex-column align-items-center mb-1">
+                <div class="saved-signature-container" style="height: 52px; border: none; min-width: 260px;">
+                    <img src="{{ form.signature.value }}" alt="Assinatura do Cliente" class="saved-signature-img">
+                </div>
+                <button type="button" id="btn-change-signature" class="btn btn-link btn-sm text-primary mt-1 d-print-none change-sig-btn font-monospace small">
+                    <i class="bi bi-pencil-square"></i> Alterar Assinatura
+                </button>
+            </div>
+            {% endif %}
+
+            <div id="signature-pad-block" class="signature-pad-wrapper mb-1" {% if form.signature.value %}style="display: none;"{% endif %}>
+                <canvas id="signature-canvas" class="signature-pad-canvas"></canvas>
+                <div class="sig-actions text-end p-1 position-absolute bottom-0 end-0 d-print-none">
+                    <button type="button" id="clear-signature" class="btn btn-link text-secondary p-0 me-1 small text-decoration-none" style="font-size: 0.75rem;">
+                        <i class="bi bi-eraser-fill"></i> Limpar
                     </button>
                 </div>
-                {% endif %}
-
-                <div id="signature-pad-block" class="signature-pad-wrapper mb-1" {% if form.signature.value %}style="display: none;"{% endif %}>
-                    <canvas id="signature-canvas" class="signature-pad-canvas"></canvas>
-                    <div class="sig-actions text-end p-1 position-absolute bottom-0 end-0 d-print-none">
-                        <button type="button" id="clear-signature" class="btn btn-link text-secondary p-0 me-1 small text-decoration-none" style="font-size: 0.75rem;">
-                            <i class="bi bi-eraser-fill"></i> Limpar
-                        </button>
-                    </div>
-                </div>
-
-                <div class="w-100 border-top border-secondary border-opacity-50 pt-1 text-muted fw-semibold text-uppercase" style="max-width: 260px; letter-spacing: 1px; font-size: 0.68rem;">
-                    Assinatura do Cliente
-                </div>
             </div>
+
+            <div class="w-100 border-top border-secondary border-opacity-50 pt-1 text-muted fw-semibold text-uppercase" style="max-width: 260px; letter-spacing: 1px; font-size: 0.68rem;">
+                Assinatura do Cliente
+            </div>
+        </div>
+
+    <!-- ... Botão de Salvar da OS ... -->
+</form>
         </div>
     </form>
 </div>

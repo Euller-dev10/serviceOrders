@@ -56,7 +56,7 @@ class ServiceOrderForm(forms.ModelForm):
         fields = [
             'service1', 'service2', 'service3', 'service4', 
             'service5', 'service6', 'service7', 'service8', 
-            'observation', 'verified', 'new_instalation', 'stamp',
+            'observation', 'verified', 'new_instalation', 'stamp', 'stamp_retired',
             'signature', 'host', 'food'
         ]
 

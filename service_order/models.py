@@ -42,6 +42,7 @@ class Scale(models.Model):
     tag = models.CharField(max_length=20, verbose_name="TAG", blank=True, null=True)
     inv_inmetro = models.CharField(max_length=10, verbose_name='N° Inventário do Inmetro', blank=True, null=True)
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='scale_client', verbose_name="Proprietário")
+    portaria = models.CharField(max_length=30, verbose_name="Portaria/Ano", blank=True, null=True)
 
     def __str__(self):
         return f'{self.brand} - {self.model}'
@@ -131,6 +132,7 @@ class ServiceOrder(models.Model):
     new_instalation = models.BooleanField(verbose_name='Instalação nova', default=False)
     signature = models.TextField(verbose_name='Assinatura do cliente', blank=True, null=True)
     stamp = models.OneToOneField(StampDelivery, on_delete=models.PROTECT, blank=True, null=True, verbose_name='stamp_service_order')
+    stamp_retired = models.CharField(max_length=15, verbose_name="Número de Selo Retirado", blank=True, null=True)
     host = models.BooleanField(verbose_name='Hospedagem', default=False)
     food = models.BooleanField(verbose_name='Alimentação', default=False)
 
@@ -177,7 +179,8 @@ class Company(models.Model):
     cep = models.CharField(max_length=30, blank=True, null=True, verbose_name="CEP")
     contact = models.CharField (max_length=20, blank=True, null=True, verbose_name="Contato")
     email = models.CharField(max_length=100, blank=True, null=True, verbose_name="Email")
-    logo = models.ImageField(upload_to='service_order/', blank=True, null=True)
+    logo = models.ImageField(upload_to='media/', blank=True, null=True)
+    number_register = models.IntegerField(verbose_name="Número de registro junto ao IPEM/PR", blank=True, null=True)
     
     def __str__(self):
         return f'CNPJ - {self.name} - {self.document} - {self.city}'

@@ -109,11 +109,17 @@
                 
                 <div class="font-monospace text-uppercase">
                     <h6 class="fw-bold text-dark mb-1" style="font-size: 0.95rem; letter-spacing: 0.5px;">{{company.name}}</h6>
-                    <p class="text-secondary mb-0 lh-sm" style="font-size: 0.72rem;">
+                    <p class="text-secondary mb-1 lh-sm" style="font-size: 0.72rem;">
                         CNPJ: {{ company.document }} | Insc.Estadual: {{ company.state_registration|default:"-" }}<br>
                         {{ company.address }} - {{ company.district }} - {{ company.city }} / {{ company.uf }} | CEP: {{ company.cep }}<br>
                         <i class="bi bi-telephone-fill"></i> {{ company.contact }}
                     </p>
+                    <!-- DESTAQUE DO REGISTRO IPEM/PR LOGO ABAIXO DOS DADOS -->
+                    <div class="mt-1">
+                        <span class="badge bg-primary text-white border border-primary rounded-1 px-2 py-1 font-monospace fw-bold" style="font-size: 0.70rem; letter-spacing: 0.5px;">
+                            <i class="bi bi-shield-check"></i> REGISTRO IPEM/PR: {{ company.number_register|default:"00000000" }}
+                        </span>
+                    </div>
                 </div>
             </div>
 
@@ -173,6 +179,7 @@
                         <tr><th class="bg-light text-secondary fw-medium ps-2 py-2">Capacidade Max:</th><td class="fw-bold text-dark py-2 ps-2">{{ object.scale.capacity|default:"-" }} {{ object.scale.unit|default:"-" }}</td></tr>
                         <tr><th class="bg-light text-secondary fw-medium ps-2 py-2">E(kg):</th><td class="fw-bold text-dark py-2 ps-2">{{ object.scale.division|default:"-" }}kg</td></tr>
                         <tr><th class="bg-light text-secondary fw-medium ps-2 py-2">Tag:</th><td class="fw-bold text-dark py-2 ps-2">{{ object.scale.tag|default:"-" }}</td></tr>
+                        <tr><th class="bg-light text-secondary fw-medium ps-2 py-2">Portaria/Ano:</th><td class="fw-bold text-dark py-2 ps-2">{{ object.scale.portaria|default:"-" }}</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -225,6 +232,10 @@
                             <tr>
                                 <th class="bg-light text-secondary fw-medium ps-2 py-2" style="width: 25%;">OBSERVAÇÕES:</th>
                                 <td class="p-2 fw-bold text-dark text-wrap ps-2">{{ object.observation|default:"Nenhuma observação registrada." }}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light text-secondary fw-medium ps-2 py-2" style="width: 25%;">NÚMERO DE SELO RETIRADO:</th>
+                                <td class="p-2 fw-bold text-dark text-wrap ps-2">{{ object.stamp_retired|default:"Nenhum selo retirado." }}</td>
                             </tr>
                             <tr>
                                 <th class="bg-light text-secondary fw-medium ps-2 py-2" style="width: 25%;">NÚMERO DE SELO:</th>
@@ -383,4 +394,4 @@
         </div>
     </div>
 </div>
-{% endblock %}
+{% endblock %} 
