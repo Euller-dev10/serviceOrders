@@ -2,76 +2,52 @@ document.addEventListener("DOMContentLoaded", function () {
     const canvas = document.getElementById("signature-canvas");
     const signatureInput = document.getElementById("id_signature");
     const clearButton = document.getElementById("clear-signature");
-    const changeButton = document.getElementById("btn-change-signature");
-    const savedBlock = document.getElementById("saved-signature-block");
-    const padBlock = document.getElementById("signature-pad-block");
     const form = document.getElementById("os-form");
 
-    if (!canvas) return;
+    if (canvas) {
+        const signaturePad = new SignaturePad(canvas);
 
-    const signaturePad = new SignaturePad(canvas, {
-        backgroundColor: 'rgba(255, 255, 255, 0)'
-    });
+        // Função responsável por ajustar a resolução real do Canvas ao tamanho CSS
+        function resizeCanvas() {
+            const ratio = Math.max(window.devicePixelRatio || 1, 1);
 
-    // Função para recalcular a dimensão real do canvas na tela
-    function resizeCanvas() {
-        if (!padBlock || padBlock.style.display === "none") return;
+            // Armazena os dados atuais caso a pessoa já tenha começado a desenhar
+            const signatureData = signaturePad.toData();
 
-        const ratio = Math.max(window.devicePixelRatio || 1, 1);
-        canvas.width = canvas.offsetWidth * ratio;
-        canvas.height = canvas.offsetHeight * ratio;
-        
-        const ctx = canvas.getContext("2d");
-        ctx.scale(ratio, ratio);
-        signaturePad.clear(); // Limpa a memória de traços ao redimensionar
-    }
+            canvas.width = canvas.offsetWidth * ratio;
+            canvas.height = canvas.offsetHeight * ratio;
+            canvas.getContext("2d").scale(ratio, ratio);
 
-    window.addEventListener("resize", resizeCanvas);
-
-    // Clique no botão "Alterar Assinatura"
-    if (changeButton) {
-        changeButton.addEventListener("click", function (e) {
-            e.preventDefault();
-
-            // 1. Alterna a exibição dos blocos
-            if (savedBlock) savedBlock.style.display = "none";
-            if (padBlock) padBlock.style.display = "block";
-
-            // 2. Limpa o valor antigo do input do Django
-            if (signatureInput) signatureInput.value = "";
+            // Limpa o canvas e reescreve os dados para ajustar na nova orientação
             signaturePad.clear();
-
-            // 3. Força o navegador a calcular o layout antes de redimensionar o canvas
-            requestAnimationFrame(function () {
-                resizeCanvas();
-            });
-        });
-    }
-
-    // Clique no botão "Limpar"
-    if (clearButton) {
-        clearButton.addEventListener("click", function (e) {
-            e.preventDefault();
-            signaturePad.clear();
-            if (signatureInput) signatureInput.value = "";
-        });
-    }
-
-    // Ao submeter o formulário
-    if (form) {
-        form.addEventListener("submit", function () {
-            // Se a área de desenho estive ativa/visível
-            if (padBlock && padBlock.style.display !== "none") {
-                if (!signaturePad.isEmpty()) {
-                    if (signatureInput) {
-                        signatureInput.value = signaturePad.toDataURL("image/png");
-                    }
-                } else {
-                    if (signatureInput) {
-                        signatureInput.value = "";
-                    }
-                }
+            if (signatureData.length > 0) {
+                signaturePad.fromData(signatureData);
             }
+        }
+
+        // Executa o ajuste inicial
+        resizeCanvas();
+
+        // Recalcula o Canvas quando a tela muda de tamanho ou gira
+        window.addEventListener("resize", resizeCanvas);
+        window.addEventListener("orientationchange", function() {
+            // Um pequeno delay garante que o navegador já recalculou a largura CSS
+            setTimeout(resizeCanvas, 200);
         });
+
+        if (clearButton) {
+            clearButton.addEventListener("click", function () {
+                signaturePad.clear();
+                signatureInput.value = "";
+            });
+        }
+
+        if (form) {
+            form.addEventListener("submit", function () {
+                if (!signaturePad.isEmpty()) {
+                    signatureInput.value = signaturePad.toDataURL();
+                }
+            });
+        }
     }
 });

@@ -11,15 +11,18 @@
         display: block;
         width: 100%;
         padding: 0.25rem 0.5rem;
-        font-size: 0.82rem;
+        font-size: 0.875rem;
         font-weight: 400;
-        line-height: 1.3;
+        line-height: 1.5;
         color: #212529;
         background-color: #fff;
         border: 1px solid #ced4da;
         border-radius: 0.25rem;
     }
-
+    .table-spec th { width: 35%; color: #495057; font-size: 0.85rem; }
+    .table-client th { width: 30%; color: #495057; font-size: 0.85rem; }
+    .table-spec td, .table-client td { font-weight: 600; color: #212529; }
+    
     .table-stamp-select select {
         display: block;
         width: 100%;
@@ -32,8 +35,11 @@
         border: none;
         outline: none;
     }
+    .table-stamp-select select:focus {
+        box-shadow: none;
+        background-color: #f8f9fa;
+    }
 
-    /* Canvas e Assinatura Saved */
     .signature-pad-wrapper {
         position: relative;
         width: 100%;
@@ -48,298 +54,176 @@
         display: block;
         touch-action: none;
     }
-    .saved-signature-container {
-        max-width: 320px;
-        width: 100%;
-        height: 150px;
-        border: 1px solid #ced4da;
-        border-radius: 0.25rem;
-        background-color: #fff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-    }
-    .saved-signature-img {
-        max-width: 100%;
-        max-height: 100%;
-        object-fit: contain;
-    }
 
-    /* REGRAS DE IMPRESSÃO A4 (IDENTICA AO TEMPLATE DE DETAIL) */
     @media print {
-        @page {
-            size: A4 portrait;
-            margin: 0.5cm 0.5cm !important;
+        #sidebar-wrapper, .navbar, .d-print-none, button, .btn-action-col, .remove-form, .sig-actions {
+            display: none !important;
         }
-
-        html, body { 
-            background-color: #fff !important;
+        #page-content-wrapper, .container {
+            width: 100% !important;
+            max-width: 100% !important;
             padding: 0 !important;
             margin: 0 !important;
-            font-size: 12px !important;
-            height: auto !important;
         }
-
-        #sidebar-wrapper, .navbar, #sidebar, .nav, sidebar, nav, .d-print-none, button, .btn-action-col, .remove-form, .sig-actions, .change-sig-btn { 
-            display: none !important; 
-        }
-
-        .print-a4-container { 
-            max-width: 100% !important; 
-            width: 100% !important;
-            height: auto !important;
-            padding: 0 !important; 
-            margin: 0 !important; 
-            display: block !important;
-        }
-
-        .print-body-content {
-            display: block !important;
-            width: 100% !important;
-        }
-
-        .print-block {
-            margin-bottom: 0.8rem !important;
-            page-break-inside: avoid !important;
-        }
-
-        .p-2, .p-3 { padding: 0.5rem 0.75rem !important; }
-        
-        .table { margin-bottom: 0 !important; }
-        .table th, .table td { 
-            padding: 0.4rem 0.5rem !important;
-            font-size: 0.82rem !important; 
-            line-height: 1.3 !important;
-        }
-
-        h5 { 
-            font-size: 0.88rem !important; 
-            margin-bottom: 0.35rem !important; 
-        }
-
+        @page { size: A4; margin: 1.2cm; }
+        body { font-size: 12px !important; background-color: #fff !important; color: #000 !important; }
+        .mb-4, .row { page-break-inside: avoid; break-inside: avoid; margin-bottom: 1.2rem !important; }
+        * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
         input, select, textarea {
             background: #fff !important;
             color: #000 !important;
             border: 1px solid #ced4da !important;
             box-shadow: none !important;
-            padding: 0.2rem !important;
-            font-size: 0.82rem !important;
+            padding: 0.25rem !important;
+            font-size: 12px !important;
             display: block !important;
         }
-
-        .print-header-row { 
-            display: flex !important; 
-            flex-direction: row !important; 
-            align-items: center !important; 
-            justify-content: space-between !important;
-            padding: 0.6rem 0.8rem !important; 
-            margin-bottom: 0.8rem !important;
-            text-align: left !important;
-            width: 100% !important;
-        }
-
-        .print-header-left {
-            display: flex !important;
-            flex-direction: row !important;
-            align-items: center !important;
-            gap: 1rem !important;
-            width: 75% !important;
-            text-align: left !important;
-        }
-
-        .print-header-right {
-            width: 25% !important;
-            text-align: right !important;
-            margin-top: 0 !important;
-        }
-
-        .print-logo { 
-            display: block !important;
-            max-height: 65px !important; 
-            width: auto !important;
-            max-width: 170px !important;
-        }
-
-        .signature-row {
-            margin-top: 2rem !important;
-            padding-top: 0.5rem !important;
-            padding-bottom: 0.5rem !important;
-            page-break-inside: avoid !important;
+        .signature-pad-wrapper {
+            border: none !important;
+            background: transparent !important;
         }
     }
 </style>
 
-<div class="container print-a4-container my-2 my-md-3" style="max-width: 960px;">
-    
-    <form method="post" id="os-form" class="print-body-content">
-        {% csrf_token %} 
+<div class="container my-5" style="max-width: 900px;">
+    <form method="post" id="os-form">
+        {% csrf_token %}
         {{ parts_useds.management_form }}
         {{ time_service.management_form }}
+        
+        <input type="hidden" name="signature" id="id_signature" value="{{ form.instance.signature|default:'' }}">
 
-        <input type="hidden" name="signature" id="id_signature" value="{{ form.signature.value|default:'' }}">
-
-        <!-- CABEÇALHO DA EMPRESA -->
-        <!-- CABEÇALHO DA EMPRESA -->
-        <div class="row align-items-center print-header-row print-block p-2 p-md-3 mb-3 bg-white rounded border border-2 border-primary-subtle shadow-sm g-2">
-            <!-- LOGO E DADOS DA EMPRESA AGRUPADOS À ESQUERDA -->
-            <div class="col-12 col-md-9 d-flex flex-column flex-md-row align-items-center gap-3 text-center text-md-start print-header-left">
-                <img src="{{ company.logo.url }}" alt="Logo" class="img-fluid print-logo flex-shrink-0" style="max-height: 70px; width: auto;">
-                
-                <div class="font-monospace text-uppercase">
-                    <h6 class="fw-bold text-dark mb-1" style="font-size: 0.95rem; letter-spacing: 0.5px;">{{company.name}}</h6>
-                    <p class="text-secondary mb-1 lh-sm" style="font-size: 0.72rem;">
-                        CNPJ: {{ company.document }} | Insc.Estadual: {{ company.state_registration|default:"-" }}<br>
-                        {{ company.address }} - {{ company.district }} - {{ company.city }} / {{ company.uf }} | CEP: {{ company.cep }}<br>
-                        <i class="bi bi-telephone-fill"></i> {{ company.contact }}
-                    </p>
-                    <!-- DESTAQUE DO REGISTRO IPEM/PR LOGO ABAIXO DOS DADOS -->
-                    <div class="mt-1">
-                        <span class="badge bg-primary text-white border border-primary rounded-1 px-2 py-1 font-monospace fw-bold" style="font-size: 0.70rem; letter-spacing: 0.5px;">
-                            <i class="bi bi-shield-check"></i> REGISTRO IPEM/PR: {{ company.number_register|default:"00000000" }}
-                        </span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Nº DA ORDEM DE SERVIÇO À DIREITA -->
-            <div class="col-12 col-md-3 text-center text-md-end mt-2 mt-md-0 print-header-right">
-                <div class="bg-light border border-primary-subtle rounded px-3 py-2 font-monospace text-center shadow-sm d-inline-block w-100">
-                    <span class="d-block text-muted text-uppercase fw-semibold" style="font-size: 0.68rem; letter-spacing: 1px; line-height: 1.1;">Ordem de Serviço</span>
-                    <span class="fs-3 fw-bold text-primary" style="letter-spacing: 0.5px;">{{ form.instance.id|stringformat:"05d" }}</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- BARRA DE AÇÕES E TÍTULO (APENAS NA TELA) -->
-        <div class="row align-items-center pb-2 mb-2 d-print-none">
+        <!-- CABEÇALHO ESPECÍFICO DE EDIÇÃO DE OS -->
+        <div class="row align-items-center pb-4 mb-4 border-bottom border-2 border-primary-subtle">
             <div class="col">
-                <h1 class="h5 fw-bold text-dark mb-0">Editar Ordem de Serviço</h1>
+                <div class="d-flex align-items-center gap-2">
+                    <h1 class="h2 fw-bold text-dark mb-0">Editar Ordem de Serviço</h1>
+                    <span class="badge bg-primary fs-6 font-monospace">Nº #{{ form.instance.pk|default:"-" }}</span>
+                </div>
             </div>
-            <div class="col text-end d-flex gap-2 justify-content-end">
-                <button type="button" onclick="window.print();" class="btn btn-sm btn-outline-primary px-3">
-                    <i class="bi bi-printer"></i> Imprimir
+            <div class="col-auto text-end d-print-none">
+                <button type="button" onclick="window.print()" class="btn btn-sm btn-outline-secondary px-3 me-2">
+                    <i class="bi bi-printer-fill"></i> Imprimir
                 </button>
-                <button type="submit" class="btn btn-sm btn-success px-3">
-                    <i class="bi bi-check-lg"></i> Atualizar OS
+                <button type="submit" class="btn btn-sm btn-success px-3 me-2">
+                    <i class="bi bi-check-circle-fill"></i> Atualizar OS
                 </button>
             </div>
         </div>
 
         {% if form.errors or parts_useds.errors or time_service.errors %}
         <div class="alert alert-danger d-print-none font-monospace small">
-            <h6 class="fw-bold"><i class="bi bi-exclamation-triangle-fill"></i> Erro ao salvar alterações. Verifique os campos:</h6>
+            <h6 class="fw-bold"><i class="bi bi-exclamation-triangle-fill"></i> Erro ao atualizar. Verifique os campos:</h6>
             {{ form.errors }}
             {{ parts_useds.errors }}
             {{ time_service.errors }}
         </div>
         {% endif %}
 
-        <!-- 01. IDENTIFICAÇÃO DO CLIENTE -->
-        <div class="mb-3 print-block">
-            <h5 class="text-primary fw-bold text-uppercase small mb-1">
-                <i class="bi bi-person-fill"></i> 01. Identificação do Cliente
-            </h5>
-            <div class="p-2 bg-white rounded border border-primary-subtle shadow-sm">
-                <table class="table table-sm table-bordered mb-0 bg-white font-monospace text-uppercase align-middle">
-                    <tbody>
-                        <tr><th class="bg-light text-secondary fw-medium ps-2 py-2" style="width: 25%;">Razão Social:</th><td class="fw-bold text-dark py-2 ps-2">{{ os.client.name }}</td></tr>
-                        <tr><th class="bg-light text-secondary fw-medium ps-2 py-2">CNPJ/CPF:</th><td class="fw-bold text-dark py-2 ps-2">{{ os.client.document }}</td></tr>
-                        <tr><th class="bg-light text-secondary fw-medium ps-2 py-2">Insc.Est.:</th><td class="fw-bold text-dark py-2 ps-2">{{ os.client.state_registration|default:"-" }}</td></tr>
-                        <tr><th class="bg-light text-secondary fw-medium ps-2 py-2">Endereço:</th><td class="fw-bold text-dark py-2 ps-2">{{ os.client.address|default:"-" }}, {{ os.client.district|default:"-" }}</td></tr>
-                        <tr><th class="bg-light text-secondary fw-medium ps-2 py-2">Cidade/UF:</th><td class="fw-bold text-dark py-2 ps-2">{{ os.client.city|default:"-" }} - {{ os.client.uf|default:"-" }}</td></tr>
-                        <tr><th class="bg-light text-secondary fw-medium ps-2 py-2">CEP:</th><td class="fw-bold text-dark py-2 ps-2">{{ client.cep|default:"-" }}</td></tr>
-                        <tr><th class="bg-light text-secondary fw-medium ps-2 py-2">Contato:</th><td class="fw-bold text-dark py-2 ps-2">{{ os.client.contact|default:"-" }}</td></tr>
-                    </tbody>
-                </table>
+        <div class="row g-4 mb-4">
+            <div class="col-md-6">
+                <h5 class="text-primary fw-bold text-uppercase small mb-2">
+                    <i class="bi bi-person-fill text-primary"></i> 01. Identificação do Cliente
+                </h5>
+                <div class="p-3 bg-white rounded border border-primary-subtle h-100">
+                    <table class="table table-sm table-bordered table-client mb-0 bg-white font-monospace text-uppercase small">
+                        <tbody>
+                            <tr><th class="bg-light">Razão Social:</th><td>{{ os.client.name }}</td></tr>
+                            <tr><th class="bg-light">CNPJ/CPF:</th><td>{{ os.client.document }}</td></tr>
+                            <tr><th class="bg-light">Insc.Est.:</th><td>{{ os.client.state_registration|default:"-" }}</td></tr>
+                            <tr><th class="bg-light">Endereço:</th><td>{{ os.client.address|default:"-" }}, {{ os.client.district|default:"-" }}</td></tr>
+                            <tr><th class="bg-light">Cidade/UF:</th><td>{{ os.client.city|default:"-" }} - {{ os.client.uf|default:"-" }}</td></tr>
+                            <tr><th class="bg-light">CEP:</th><td>{{ os.client.cep|default:"-" }}</td></tr>
+                            <tr><th class="bg-light">Contato:</th><td>{{ os.client.contact|default:"-" }}</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <h5 class="text-primary fw-bold text-uppercase small mb-2">
+                    <i class="bi bi-scale text-primary"></i> 02. Balança
+                </h5>
+                <div class="p-3 bg-white rounded border border-primary-subtle h-100">
+                    <table class="table table-sm table-bordered table-spec mb-0 bg-white font-monospace text-uppercase small">
+                        <tbody>
+                            <tr><th class="bg-light">Marca / Modelo:</th><td>{{ os.scale.brand|default:"-" }} / {{ os.scale.model|default:"-" }}</td></tr>
+                            <tr><th class="bg-light">Nº de Série:</th><td>{{ os.scale.serie|default:"-" }}</td></tr>
+                            <tr><th class="bg-light">Capacidade Max:</th><td>{{ os.scale.capacity|default:"-" }} {{ os.scale.unit|default:"-" }}</td></tr>
+                            <tr><th class="bg-light">E(kg):</th><td>{{ os.scale.division|default:"-" }}</td></tr>
+                            <tr><th class="bg-light">Tag:</th><td>{{ os.scale.tag|default:"-" }}</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
-        <!-- 02. BALANÇA -->
-        <div class="mb-3 print-block">
-            <h5 class="text-primary fw-bold text-uppercase small mb-1">
-                <i class="bi bi-scale"></i> 02. Balança
+        <div class="mb-4">
+            <h5 class="text-primary fw-bold text-uppercase small mb-2">
+                <i class="bi bi-tools text-primary"></i> 03. Serviços Executados
             </h5>
-            <div class="p-2 bg-white rounded border border-primary-subtle shadow-sm">
-                <table class="table table-sm table-bordered mb-0 bg-white font-monospace text-uppercase align-middle">
-                    <tbody>
-                        <tr><th class="bg-light text-secondary fw-medium ps-2 py-2" style="width: 25%;">Marca / Modelo:</th><td class="fw-bold text-dark py-2 ps-2">{{ os.scale.brand|default:"-" }} / {{ os.scale.model|default:"-" }}</td></tr>
-                        <tr><th class="bg-light text-secondary fw-medium ps-2 py-2">Nº de Série:</th><td class="fw-bold text-dark py-2 ps-2">{{ os.scale.serie|default:"-" }}</td></tr>
-                        <tr><th class="bg-light text-secondary fw-medium ps-2 py-2">Capacidade Max:</th><td class="fw-bold text-dark py-2 ps-2">{{ os.scale.capacity|default:"-" }} {{ os.scale.unit|default:"-" }}</td></tr>
-                        <tr><th class="bg-light text-secondary fw-medium ps-2 py-2">E(kg):</th><td class="fw-bold text-dark py-2 ps-2">{{ os.scale.division|default:"-" }}kg</td></tr>
-                        <tr><th class="bg-light text-secondary fw-medium ps-2 py-2">Tag:</th><td class="fw-bold text-dark py-2 ps-2">{{ os.scale.tag|default:"-" }}</td></tr>
-                        <tr><th class="bg-light text-secondary fw-medium ps-2 py-2">Portaria/Ano:</th><td class="fw-bold text-dark py-2 ps-2">{{ os.scale.portaria|default:"-" }}</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- 03. SERVIÇOS EXECUTADOS -->
-        <div class="mb-3 print-block">
-            <h5 class="text-primary fw-bold text-uppercase small mb-1">
-                <i class="bi bi-tools"></i> 03. Serviços Executados
-            </h5>
-            <div class="p-2 p-md-3 bg-white rounded border border-primary-subtle shadow-sm">
-                <div class="mb-3 font-monospace text-uppercase row g-2 row-cols-2">
-                    <div class="col d-flex align-items-center">
-                        <input class="form-check-input me-2" type="checkbox" name="service1" id="id_service1" {% if form.service1.value %}checked{% endif %}>
-                        <label class="form-check-label fw-bold text-dark" for="id_service1">Manutenção corretiva</label>
+            <div class="p-3 bg-white rounded border border-primary-subtle">
+                <div class="mb-3 font-monospace small text-uppercase">
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="service1" id="id_service1" {% if form.service1.value %}checked{% endif %}>
+                        <label class="form-check-label text-dark" for="id_service1">Manutenção corretiva</label>
                     </div>
-                    <div class="col d-flex align-items-center">
-                        <input class="form-check-input me-2" type="checkbox" name="service2" id="id_service2" {% if form.service2.value %}checked{% endif %}>
-                        <label class="form-check-label fw-bold text-dark" for="id_service2">Manutenção preventiva</label>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="service2" id="id_service2" {% if form.service2.value %}checked{% endif %}>
+                        <label class="form-check-label text-dark" for="id_service2">Manutenção preventiva</label>
                     </div>
-                    <div class="col d-flex align-items-center">
-                        <input class="form-check-input me-2" type="checkbox" name="service3" id="id_service3" {% if form.service3.value %}checked{% endif %}>
-                        <label class="form-check-label fw-bold text-dark" for="id_service3">Certificação com pesos padrão</label>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="service3" id="id_service3" {% if form.service3.value %}checked{% endif %}>
+                        <label class="form-check-label text-dark" for="id_service3">Certificação com pesos padrão</label>
                     </div>
-                    <div class="col d-flex align-items-center">
-                        <input class="form-check-input me-2" type="checkbox" name="service4" id="id_service4" {% if form.service4.value %}checked{% endif %}>
-                        <label class="form-check-label fw-bold text-dark" for="id_service4">Ajustes com pesos padrão</label>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="service4" id="id_service4" {% if form.service4.value %}checked{% endif %}>
+                        <label class="form-check-label text-dark" for="id_service4">Ajustes com pesos padrão</label>
                     </div>
-                    <div class="col d-flex align-items-center">
-                        <input class="form-check-input me-2" type="checkbox" name="service5" id="id_service5" {% if form.service5.value %}checked{% endif %}>
-                        <label class="form-check-label fw-bold text-dark" for="id_service5">Certificado conformidade</label>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="service5" id="id_service5" {% if form.service5.value %}checked{% endif %}>
+                        <label class="form-check-label text-dark" for="id_service5">Certificado de conformidade</label>
                     </div>
-                    <div class="col d-flex align-items-center">
-                        <input class="form-check-input me-2" type="checkbox" name="service6" id="id_service6" {% if form.service6.value %}checked{% endif %}>
-                        <label class="form-check-label fw-bold text-dark" for="id_service6">Reparo em plataforma / estrutura</label>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="service6" id="id_service6" {% if form.service6.value %}checked{% endif %}>
+                        <label class="form-check-label text-dark" for="id_service6">Reparo em plataforma/estrutura metálica</label>
                     </div>
-                    <div class="col d-flex align-items-center">
-                        <input class="form-check-input me-2" type="checkbox" name="service7" id="id_service7" {% if form.service7.value %}checked{% endif %}>
-                        <label class="form-check-label fw-bold text-dark" for="id_service7">Reparo dispositivo eletroeletrônico</label>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="service7" id="id_service7" {% if form.service7.value %}checked{% endif %}>
+                        <label class="form-check-label text-dark" for="id_service7">Reparo em dispositivo eletroeletrônico</label>
                     </div>
-                    <div class="col d-flex align-items-center">
-                        <input class="form-check-input me-2" type="checkbox" name="service8" id="id_service8" {% if form.service8.value %}checked{% endif %}>
-                        <label class="form-check-label fw-bold text-dark" for="id_service8">Reparo em comunicação / externos</label>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" name="service8" id="id_service8" {% if form.service8.value %}checked{% endif %}>
+                        <label class="form-check-label text-dark" for="id_service8">Reparo em comunicação / equipamentos externos</label>
                     </div>
                 </div>
 
-                <div class="table-responsive mt-2">
-                    <table class="table table-sm table-bordered mb-0 align-middle font-monospace text-uppercase">
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered mb-0 align-middle font-monospace text-uppercase small">
                         <tbody>
-
-                            <th class="bg-light text-secondary fw-medium ps-2 py-2" style="width: 25%;">NÚMERO DE SELO RETIRADO:</th>
-                                <td class="p-2 fw-bold text-dark text-wrap ps-2">{{ form.stamp_retired}}</td>
                             <tr>
-                                <th class="bg-light text-secondary fw-medium ps-2 py-2" style="width: 25%;">NÚMERO DE SELO:</th>
+                                <th class="bg-light text-secondary fw-medium ps-2 py-2" style="width: 25%;">NÚMERO DE SELO RETIRADO:</th>
+                                <td class="p-2 fw-bold text-dark text-wrap ps-2">{{ form.stamp_retired }}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light text-secondary ps-2 align-middle" style="width: 25%;">Nº DO SELO:</th>
                                 <td class="p-0 table-stamp-select">
                                     {{ form.stamp }}
                                 </td>
                             </tr>
                             <tr>
-                                <th class="bg-light text-secondary fw-medium ps-2 py-2" style="width: 25%;">OBSERVAÇÕES:</th>
+                                <th class="bg-light text-secondary ps-2 align-middle" style="width: 25%;">OBSERVAÇÕES:</th>
                                 <td class="p-1">
                                     <input type="text" name="observation" id="id_observation" class="form-control form-control-sm border-0 font-monospace text-uppercase" value="{{ form.observation.value|default:'' }}" placeholder="Descreva observações do serviço...">
                                 </td>
                             </tr>
                             <tr>
-                                <th class="bg-light text-secondary fw-medium ps-2 py-2">DATA DO SERVIÇO:</th>
-                                <td class="p-2 fw-bold text-dark ps-2 bg-white">
-                                    {% if form.instance.date %}
+                                <th class="bg-light text-secondary ps-2 align-middle" style="width: 25%;">DATA DO SERVIÇO:</th>
+                                <td class="p-2 fw-bold text-dark font-monospace small bg-white text-uppercase">
+                                    {% if form.instance.pk and form.instance.date %}
                                         {{ form.instance.date|date:"d/m/Y H:i" }}
                                     {% else %}
-                                        {{ service_order.date.value|date:"d/m/Y H:i" }}
+                                        <span class="text-muted fw-normal text-lowercase italic">Será gerada ao salvar</span>
                                     {% endif %}
                                 </td>
                             </tr>
@@ -349,16 +233,15 @@
             </div>
         </div>
 
-        <!-- 04. INFORMAÇÕES COMPLEMENTARES -->
-        <div class="mb-3 print-block">
-            <h5 class="text-primary fw-bold text-uppercase small mb-1">
-                <i class="bi bi-info-circle"></i> 04. Informações Complementares
+        <div class="mb-4">
+            <h5 class="text-primary fw-bold text-uppercase small mb-2">
+                <i class="bi bi-info-circle text-primary"></i> 04. Informações Complementares
             </h5>
-            <div class="p-2 p-md-3 bg-white rounded border border-primary-subtle shadow-sm">
-                <div class="row g-2 font-monospace">
-                    <div class="col-6">
+            <div class="p-3 bg-white rounded border border-primary-subtle">
+                <div class="row g-3 font-monospace small">
+                    <div class="col-md-6">
                         <div class="p-2 border rounded bg-light">
-                            <div class="form-check mb-1">
+                            <div class="form-check">
                                 <input class="form-check-input" type="checkbox" name="verified" id="id_verified" {% if form.verified.value %}checked{% endif %}>
                                 <label class="form-check-label fw-bold text-secondary text-uppercase ms-1" for="id_verified">
                                     Equipamento Verificado pelo INMETRO este ano
@@ -372,9 +255,9 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-6">
+                    <div class="col-md-6">
                         <div class="p-2 border rounded bg-light">
-                            <div class="form-check mb-1">
+                            <div class="form-check">
                                 <input class="form-check-input" type="checkbox" name="new_instalation" id="id_new_instalation" {% if form.new_instalation.value %}checked{% endif %}>
                                 <label class="form-check-label fw-bold text-secondary text-uppercase ms-1" for="id_new_instalation">
                                     Instalação Nova
@@ -393,38 +276,38 @@
         </div>
 
         <!-- 05. PEÇAS UTILIZADAS -->
-        <div class="mb-3 print-block">
-            <div class="d-flex justify-content-between align-items-center mb-1">
+        <div class="mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
                 <h5 class="text-success fw-bold text-uppercase small mb-0">
-                    <i class="bi bi-box-seam-fill"></i> 05. Peças Utilizadas
+                    <i class="bi bi-box-seam-fill text-success"></i> 05. Peças Utilizadas
                 </h5>
                 <button type="button" id="add-part-btn" class="btn btn-sm btn-outline-success d-print-none">
                     <i class="bi bi-plus-lg"></i> Adicionar Peça
                 </button>
             </div>
-            <div class="p-2 bg-success-subtle rounded border-start border-4 border-success shadow-sm">
+            <div class="p-3 bg-success-subtle rounded-3 border-start border-4 border-success shadow-sm">
                 <div class="table-responsive">
-                    <table class="table table-sm table-bordered align-middle mb-0 bg-white font-monospace text-uppercase" id="parts-table">
+                    <table class="table table-sm table-borderless table-formset align-middle mb-0" id="parts-table">
                         <thead>
-                            <tr class="text-success fw-bold text-uppercase bg-success bg-opacity-10">
-                                <th style="width: 15%;" class="ps-2 py-2">Código</th>
-                                <th style="width: 10%;" class="text-center py-2">Qtd</th>
-                                <th style="width: 20%;" class="py-2">Série</th>
-                                <th style="width: 40%;" class="py-2">Descrição</th>
-                                <th style="width: 15%;" class="text-center py-2">Base Troca</th>
-                                <th style="width: 5%;" class="text-center btn-action-col d-print-none py-2">Ação</th>
+                            <tr class="text-success small fw-bold text-uppercase border-bottom border-success-subtle">
+                                <th style="width: 15%;">Código</th>
+                                <th style="width: 15%;">Quantidade</th>
+                                <th style="width: 15%;">Série</th>
+                                <th style="width: 35%;">Descrição</th>
+                                <th style="width: 10%;" class="text-center">Base de Troca</th>
+                                <th style="width: 10%;" class="text-center btn-action-col">Ação</th>
                             </tr>
                         </thead>
-                        <tbody id="parts-container" class="table-formset">
+                        <tbody id="parts-container">
                             {% for form_item in parts_useds %}
-                            <tr class="formset-row">
+                            <tr class="formset-row border-bottom border-light-subtle">
                                 {% for hidden in form_item.hidden_fields %} {{ hidden }} {% endfor %}
-                                <td class="p-1">{{ form_item.code }}</td>
-                                <td class="p-1 text-center">{{ form_item.amount }}</td>
-                                <td class="p-1">{{ form_item.serie }}</td>
-                                <td class="p-1">{{ form_item.description }}</td>
-                                <td class="p-1 text-center">{{ form_item.base }}</td>
-                                <td class="text-center btn-action-col d-print-none p-1">
+                                <td>{{ form_item.code }}</td>
+                                <td>{{ form_item.amount }}</td>
+                                <td>{{ form_item.serie }}</td>
+                                <td>{{ form_item.description }}</td>
+                                <td class="text-center">{{ form_item.base }}</td>
+                                <td class="text-center btn-action-col">
                                     {% if parts_useds.can_delete %}
                                         <div class="d-none">{{ form_item.DELETE }}</div>
                                     {% endif %}
@@ -440,16 +323,15 @@
             </div>
         </div>
 
-        <!-- TEMPLATE PEÇAS JS -->
         <div id="empty-part-template" class="d-none">
             <table>
-                <tr class="formset-row">
-                    <td class="p-1">{{ parts_useds.empty_form.code }}</td>
-                    <td class="p-1 text-center">{{ parts_useds.empty_form.amount }}</td>
-                    <td class="p-1">{{ parts_useds.empty_form.serie }}</td>
-                    <td class="p-1">{{ parts_useds.empty_form.description }}</td>
-                    <td class="p-1 text-center">{{ parts_useds.empty_form.base }}</td>
-                    <td class="text-center btn-action-col d-print-none p-1">
+                <tr class="formset-row border-bottom border-light-subtle">
+                    <td>{{ parts_useds.empty_form.code }}</td>
+                    <td>{{ parts_useds.empty_form.amount }}</td>
+                    <td>{{ parts_useds.empty_form.serie }}</td>
+                    <td>{{ parts_useds.empty_form.description }}</td>
+                    <td class="text-center">{{ parts_useds.empty_form.base }}</td>
+                    <td class="text-center btn-action-col">
                         <button type="button" class="btn btn-sm btn-link text-danger remove-form p-0">
                             <i class="bi bi-trash3-fill"></i>
                         </button>
@@ -459,40 +341,40 @@
         </div>
 
         <!-- 06. TEMPO DE SERVIÇO -->
-        <div class="mb-3 print-block">
-            <div class="d-flex justify-content-between align-items-center mb-1">
+        <div class="mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
                 <h5 class="text-success fw-bold text-uppercase small mb-0">
-                    <i class="bi bi-clock-fill"></i> 06. Tempo de Serviço
+                    <i class="bi bi-clock-fill text-success"></i> 06. Tempo de Serviço
                 </h5>
                 <button type="button" id="add-time-btn" class="btn btn-sm btn-outline-success d-print-none">
                     <i class="bi bi-plus-lg"></i> Adicionar Horário
                 </button>
             </div>
-            <div class="p-2 bg-success-subtle rounded border-start border-4 border-success shadow-sm">
+            <div class="p-3 bg-success-subtle rounded-3 border-start border-4 border-success shadow-sm">
                 <div class="table-responsive">
-                    <table class="table table-sm table-bordered align-middle mb-0 bg-white font-monospace text-uppercase" id="time-table">
+                    <table class="table table-sm table-borderless table-formset align-middle mb-0" id="time-table">
                         <thead>
-                            <tr class="text-success fw-bold text-uppercase bg-success bg-opacity-10">
-                                <th style="width: 15%;" class="ps-2 py-2">Dia</th>
-                                <th style="width: 15%;" class="text-center py-2">Início</th>
-                                <th style="width: 15%;" class="text-center py-2">Parada</th>
-                                <th style="width: 25%;" class="text-center py-2">Total Horas</th>
-                                <th style="width: 12%;" class="text-center py-2">Carro</th>
-                                <th style="width: 13%;" class="text-center py-2">Caminhão</th>
-                                <th style="width: 5%;" class="text-center btn-action-col d-print-none py-2">Ação</th>
+                            <tr class="text-success small fw-bold text-uppercase border-bottom border-success-subtle">
+                                <th style="width: 15%;">Data</th>
+                                <th style="width: 15%;">Início</th>
+                                <th style="width: 15%;">Parada</th>
+                                <th style="width: 25%;">Total de Horas</th>
+                                <th style="width: 10%;" class="text-center">Carro</th>
+                                <th style="width: 10%;" class="text-center">Caminhão</th>
+                                <th style="width: 10%;" class="text-center btn-action-col">Ação</th>
                             </tr>
                         </thead>
-                        <tbody id="time-container" class="table-formset">
+                        <tbody id="time-container">
                             {% for form_item in time_service %}
-                            <tr class="formset-row">
+                            <tr class="formset-row border-bottom border-light-subtle">
                                 {% for hidden in form_item.hidden_fields %} {{ hidden }} {% endfor %}
-                                <td class="p-1">{{ form_item.day }}</td>
-                                <td class="p-1 text-center">{{ form_item.start }}</td>
-                                <td class="p-1 text-center">{{ form_item.stop }}</td>
-                                <td class="p-1 text-center">{{ form_item.total_hours }}</td>
-                                <td class="p-1 text-center">{{ form_item.car }}</td>
-                                <td class="p-1 text-center">{{ form_item.truck }}</td>
-                                <td class="text-center btn-action-col d-print-none p-1">
+                                <td>{{ form_item.day }}</td>
+                                <td>{{ form_item.start }}</td>
+                                <td>{{ form_item.stop }}</td>
+                                <td>{{ form_item.total_hours }}</td>
+                                <td class="text-center">{{ form_item.car }}</td>
+                                <td class="text-center">{{ form_item.truck }}</td>
+                                <td class="text-center btn-action-col">
                                     {% if time_service.can_delete %}
                                         <div class="d-none">{{ form_item.DELETE }}</div>
                                     {% endif %}
@@ -508,17 +390,16 @@
             </div>
         </div>
 
-        <!-- TEMPLATE TEMPO JS -->
         <div id="empty-time-template" class="d-none">
             <table>
-                <tr class="formset-row">
-                    <td class="p-1">{{ time_service.empty_form.day }}</td>
-                    <td class="p-1 text-center">{{ time_service.empty_form.start }}</td>
-                    <td class="p-1 text-center">{{ time_service.empty_form.stop }}</td>
-                    <td class="p-1 text-center">{{ time_service.empty_form.total_hours }}</td>
-                    <td class="p-1 text-center">{{ time_service.empty_form.car }}</td>
-                    <td class="p-1 text-center">{{ time_service.empty_form.truck }}</td>
-                    <td class="text-center btn-action-col d-print-none p-1">
+                <tr class="formset-row border-bottom border-light-subtle">
+                    <td>{{ time_service.empty_form.day }}</td>
+                    <td>{{ time_service.empty_form.start }}</td>
+                    <td>{{ time_service.empty_form.stop }}</td>
+                    <td>{{ time_service.empty_form.total_hours }}</td>
+                    <td class="text-center">{{ time_service.empty_form.car }}</td>
+                    <td class="text-center">{{ time_service.empty_form.truck }}</td>
+                    <td class="text-center btn-action-col">
                         <button type="button" class="btn btn-sm btn-link text-danger remove-form p-0">
                             <i class="bi bi-trash3-fill"></i>
                         </button>
@@ -527,54 +408,38 @@
             </table>
         </div>
 
-        <!-- ASSINATURAS -->
-        <div class="row text-center g-2 signature-row">
+        <div class="row pt-5 mt-4 text-center g-4 signature-section">
             <div class="col-6 d-flex flex-column justify-content-end align-items-center">
-                <div class="text-dark fw-bolder text-uppercase lh-1 mb-1" style="font-size: 0.9rem; letter-spacing: 0.5px;">
+                <div class="text-dark fw-bolder text-uppercase lh-1 mb-1 tracking-wide" style="font-size: 1.15rem; letter-spacing: 0.5px;">
                     {{ form.instance.user.get_full_name|default:form.instance.user.username }}
                 </div>
-                <div class="w-100 border-top border-secondary border-opacity-50 pt-1 text-muted fw-semibold text-uppercase" style="max-width: 260px; letter-spacing: 1px; font-size: 0.68rem;">
+                <div class="w-70 mx-auto signature-line border-top border-secondary border-opacity-50 pt-2 text-muted fw-semibold text-uppercase small" style="min-width: 260px; letter-spacing: 1px; font-size: 0.75rem;">
                     Responsável Técnico
                 </div>
             </div>
-            
-    <form id="os-form" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
 
-    <!-- 1. CAMPO OCULTO (Necessário para o JS salvar o valor da assinatura no Django) -->
-        <input type="hidden" name="signature" id="id_signature" value="{{ form.signature.value|default:'' }}">
+            <div class="col-6 d-flex flex-column justify-content-end align-items-center">
+                {% if form.instance.signature %}
+                    <!-- CASO JÁ EXISTA ASSINATURA: Exibe apenas a imagem gravada -->
+                    <div id="saved-signature-block" class="mb-2 text-center">
+                        <img src="{{ form.instance.signature }}" alt="Assinatura do Cliente" class="img-fluid" style="max-height: 120px;">
+                    </div>
+                {% else %}
+                    <!-- CASO NÃO TENHA ASSINATURA: Habilita o Canvas para assinar -->
+                    <div id="signature-pad-block" class="signature-pad-wrapper mb-2" style="position: relative;">
+                        <canvas id="signature-canvas" class="signature-pad-canvas"></canvas>
+                        <div class="sig-actions text-end p-1 position-absolute bottom-0 end-0 d-print-none">
+                            <button type="button" id="clear-signature" class="btn btn-link text-secondary p-0 me-1 small text-decoration-none" style="font-size: 0.75rem;">
+                                <i class="bi bi-eraser-fill"></i> Limpar
+                            </button>
+                        </div>
+                    </div>
+                {% endif %}
 
-    <!-- ... Seus outros campos da OS aqui ... -->
-
-    <!-- 2. SEU BLOCO DA ASSINATURA -->
-        <div class="col-6 d-flex flex-column justify-content-end align-items-center">
-            {% if form.signature.value %}
-            <div id="saved-signature-block" class="d-flex flex-column align-items-center mb-1">
-                <div class="saved-signature-container" style="height: 52px; border: none; min-width: 260px;">
-                    <img src="{{ form.signature.value }}" alt="Assinatura do Cliente" class="saved-signature-img">
-                </div>
-                <button type="button" id="btn-change-signature" class="btn btn-link btn-sm text-primary mt-1 d-print-none change-sig-btn font-monospace small">
-                    <i class="bi bi-pencil-square"></i> Alterar Assinatura
-                </button>
-            </div>
-            {% endif %}
-
-            <div id="signature-pad-block" class="signature-pad-wrapper mb-1" {% if form.signature.value %}style="display: none;"{% endif %}>
-                <canvas id="signature-canvas" class="signature-pad-canvas"></canvas>
-                <div class="sig-actions text-end p-1 position-absolute bottom-0 end-0 d-print-none">
-                    <button type="button" id="clear-signature" class="btn btn-link text-secondary p-0 me-1 small text-decoration-none" style="font-size: 0.75rem;">
-                        <i class="bi bi-eraser-fill"></i> Limpar
-                    </button>
+                <div class="w-70 mx-auto signature-line border-top border-secondary border-opacity-50 pt-2 text-muted fw-semibold text-uppercase small" style="min-width: 260px; letter-spacing: 1px; font-size: 0.75rem;">
+                    Assinatura do Cliente
                 </div>
             </div>
-
-            <div class="w-100 border-top border-secondary border-opacity-50 pt-1 text-muted fw-semibold text-uppercase" style="max-width: 260px; letter-spacing: 1px; font-size: 0.68rem;">
-                Assinatura do Cliente
-            </div>
-        </div>
-
-    <!-- ... Botão de Salvar da OS ... -->
-</form>
         </div>
     </form>
 </div>

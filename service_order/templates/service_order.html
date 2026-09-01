@@ -91,7 +91,6 @@
         {{ parts_useds.management_form }}
         {{ time_service.management_form }}
         
-        <!-- CAMPO AJUSTADO COM O VALOR DA INSTÂNCIA -->
         <input type="hidden" name="signature" id="id_signature" value="{{ form.instance.signature|default:'' }}">
 
         <div class="row align-items-center pb-4 mb-4 border-bottom border-2 border-primary-subtle">
@@ -195,10 +194,10 @@
                 <div class="table-responsive">
                     <table class="table table-sm table-bordered mb-0 align-middle font-monospace text-uppercase small">
                         <tbody>
-
-                            <th class="bg-light text-secondary fw-medium ps-2 py-2" style="width: 25%;">NÚMERO DE SELO RETIRADO:</th>
-                                <td class="p-2 fw-bold text-dark text-wrap ps-2">{{ form.stamp_retired}}</td>
                             <tr>
+                                <th class="bg-light text-secondary fw-medium ps-2 py-2" style="width: 25%;">NÚMERO DE SELO RETIRADO:</th>
+                                <td class="p-2 fw-bold text-dark text-wrap ps-2">{{ form.stamp_retired }}</td>
+                            </tr>
                             <tr>
                                 <th class="bg-light text-secondary ps-2 align-middle" style="width: 25%;">Nº DO SELO:</th>
                                 <td class="p-0 table-stamp-select">
@@ -413,8 +412,22 @@
                     Responsável Técnico
                 </div>
             </div>
+
             <div class="col-6 d-flex flex-column justify-content-end align-items-center">
-                <div class="signature-pad-wrapper mb-2">
+                <!-- 1. BLOCO DE EXIBIÇÃO DA ASSINATURA JÁ SALVA -->
+                <div id="saved-signature-block" class="mb-2 text-center" style="{% if not form.instance.signature %}display: none;{% endif %}">
+                    {% if form.instance.signature %}
+                        <img src="{{ form.instance.signature }}" alt="Assinatura do Cliente" class="img-fluid" style="max-height: 120px;">
+                    {% endif %}
+                    <div class="d-print-none mt-1">
+                        <button type="button" id="btn-change-signature" class="btn btn-sm btn-link text-primary p-0 text-decoration-none" style="font-size: 0.75rem;">
+                            <i class="bi bi-pencil-square"></i> Alterar Assinatura
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 2. BLOCO DO CANVAS PARA NOVA ASSINATURA -->
+                <div id="signature-pad-block" class="signature-pad-wrapper mb-2" style="{% if form.instance.signature %}display: none;{% endif %} position: relative;">
                     <canvas id="signature-canvas" class="signature-pad-canvas"></canvas>
                     <div class="sig-actions text-end p-1 position-absolute bottom-0 end-0 d-print-none">
                         <button type="button" id="clear-signature" class="btn btn-link text-secondary p-0 me-1 small text-decoration-none" style="font-size: 0.75rem;">
@@ -422,6 +435,7 @@
                         </button>
                     </div>
                 </div>
+
                 <div class="w-70 mx-auto signature-line border-top border-secondary border-opacity-50 pt-2 text-muted fw-semibold text-uppercase small" style="min-width: 260px; letter-spacing: 1px; font-size: 0.75rem;">
                     Assinatura do Cliente
                 </div>
@@ -433,5 +447,4 @@
 <script src="{% static 'js/signature.js' %}"></script>
 <script src="{% static 'js/os_form.js' %}"></script>
 <script src="{% static 'js/delete_form.js' %}"></script>
-
 {% endblock %}

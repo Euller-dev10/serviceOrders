@@ -7,6 +7,7 @@ from django.db.models import Q
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from django.http import HttpResponseRedirect
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -211,13 +212,24 @@ class ServiceOrderUpdateView(UpdateView):
         context = self.get_context_data()
         parts_useds = context['parts_useds']
         time_service = context['time_service']
-        self.object = form.save()
+
+        # 1. Valida se os Formsets estão OK
         if parts_useds.is_valid() and time_service.is_valid():
+            # 2. Grava a OS principal no banco (incluindo a assinatura)
+            self.object = form.save()
+            
+            # 3. Vincula a OS salva aos Formsets e os grava
             parts_useds.instance = self.object
             parts_useds.save()
-            time_service.instance= self.object
+            
+            time_service.instance = self.object
             time_service.save()
-        return super().form_valid(form)
+            
+            # 4. Redireciona para o success_url
+            return HttpResponseRedirect(self.get_success_url())
+        else:
+            # 5. Se houver erro nas peças ou horários, recarrega a página mostrando os erros
+            return self.render_to_response(self.get_context_data(form=form))
     
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
