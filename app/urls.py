@@ -6,7 +6,6 @@ from service_order.views import HomeView, ClientListView, NewClientCreateView, N
 from accounts.views import register_view, login_view, logout_view
 
 
-
 urlpatterns = [
     path('',HomeView.as_view(), name='home'),
     path('admin/', admin.site.urls, name='admin'),
