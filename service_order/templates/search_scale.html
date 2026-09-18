@@ -50,7 +50,7 @@
                 </thead>
                 <tbody id="clientTableBody">
                     {% for scale in scales %}
-                    <tr>
+                    <tr data-href="{% url 'scale_detail' pk=scale.id %}">
                         <td class="ps-4 py-3">
                             <span class="text-dark fw-semibold">{{ scale.brand }}</span>
                         </td>
@@ -103,4 +103,15 @@
 
 <!-- Mantém seu script original de filtro -->
 <script src="{% static 'js/filter.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('#clientTable tbody tr[data-href]').forEach(function(row) {
+        row.style.cursor = 'pointer';
+        row.addEventListener('click', function(e) {
+            if (e.target.closest('a, button')) return;
+            window.location.href = row.dataset.href;
+        });
+    });
+});
+</script>
 {% endblock %}

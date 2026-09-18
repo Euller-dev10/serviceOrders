@@ -48,7 +48,7 @@
                 </thead>
                 <tbody id="clientTableBody">
                     {% for client in clients %}
-                    <tr>
+                    <tr data-href="{% url 'client_detail' client.id %}">
                         <td class="ps-4 py-3">
                             <span class="text-dark fw-semibold">{{ client.name }}</span>
                         </td>
@@ -85,4 +85,15 @@
 
 <!-- Mantém seu script original funcionando em sincronia -->
 <script src="{% static 'js/filter.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('#clientTable tbody tr[data-href]').forEach(function(row) {
+        row.style.cursor = 'pointer';
+        row.addEventListener('click', function(e) {
+            if (e.target.closest('a, button')) return;
+            window.location.href = row.dataset.href;
+        });
+    });
+});
+</script>
 {% endblock %}

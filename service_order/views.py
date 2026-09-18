@@ -156,7 +156,7 @@ class ServiceOrderDetailView(DetailView):
         service_order = context['os']
         context['parts_useds'] = Part.objects.filter(service_order=service_order )
         context['time_service'] = TimeService.objects.filter(service_order=service_order)
-        context['company'] = Company.objects.get(id=2)
+        context['company'] = Company.objects.first()
         return context
     
 @method_decorator(login_required(login_url='login'), name='dispatch')

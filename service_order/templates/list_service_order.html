@@ -109,7 +109,7 @@
                 </thead>
                 <tbody>
                     {% for os in service_order %}
-                    <tr class="custom-table-row">
+                    <tr class="custom-table-row" data-href="{% url 'os_detail' os.id %}">
                         <td>
                             <span class="text-dark fw-medium">#{{ os.id }}</span>
                         </td>
@@ -156,4 +156,15 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('tr[data-href]').forEach(function(row) {
+        row.style.cursor = 'pointer';
+        row.addEventListener('click', function(e) {
+            if (e.target.closest('a, button')) return;
+            window.location.href = row.dataset.href;
+        });
+    });
+});
+</script>
 {% endblock %}
