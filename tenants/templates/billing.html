@@ -1,0 +1,136 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">Faturamento</h1>
+        <span class="badge bg-secondary">Somente leitura (MVP)</span>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header bg-primary text-white">Plano atual</div>
+                <div class="card-body">
+                    {% if plan %}
+                        <h2 class="h5">{{ plan.name }}</h2>
+                        <p class="mb-1">Código: <code>{{ plan.code }}</code></p>
+                        <p class="mb-1">Preço mensal: <strong>{{ price_display }}</strong></p>
+                        <p class="mb-0">
+                            Status:
+                            <span class="badge {% if subscription and subscription.status == 'ACTIVE' %}bg-success{% elif subscription and subscription.status == 'TRIALING' %}bg-info{% else %}bg-warning text-dark{% endif %}">
+                                {% if subscription.status == 'ACTIVE' %}Ativa{% elif subscription.status == 'TRIALING' %}Em trial{% elif subscription.status == 'PAST_DUE' %}Em atraso{% else %}Sem assinatura{% endif %}
+                            </span>
+                        </p>
+                    {% else %}
+                        <p class="text-muted mb-0">Sem assinatura vigente.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header bg-light">Ciclo de cobrança</div>
+                <div class="card-body">
+                    <p class="mb-1">Início: {{ period_start|date:'d/m/Y H:i'|default:'—' }}</p>
+                    <p class="mb-0">Fim: {{ period_end|date:'d/m/Y H:i'|default:'—' }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">Uso no ciclo</div>
+        <div class="card-body">
+            <table class="table table-sm align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Recurso</th>
+                        <th class="text-end">Usado</th>
+                        <th class="text-end">Limite</th>
+                        <th>Situação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Ordens de Serviço/mês</td>
+                        <td class="text-end">{{ usage.os.used }}</td>
+                        <td class="text-end">{{ os_limit_display }}</td>
+                        <td>
+                            {% if usage.os.over %}
+                                <span class="badge bg-danger">No limite</span>
+                            {% else %}
+                                <span class="badge bg-success">OK</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Assentos</td>
+                        <td class="text-end">{{ usage.seats.used }}</td>
+                        <td class="text-end">{{ seats_limit_display }}</td>
+                        <td>
+                            {% if usage.seats.over %}
+                                <span class="badge bg-danger">No limite</span>
+                            {% else %}
+                                <span class="badge bg-success">OK</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Créditos IA/mês</td>
+                        <td class="text-end">{{ usage.ai.used }}</td>
+                        <td class="text-end">{{ ai_limit_display }}</td>
+                        <td>
+                            {% if usage.ai.over %}
+                                <span class="badge bg-danger">No limite</span>
+                            {% else %}
+                                <span class="badge bg-success">OK</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header">Planos disponíveis</div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-striped mb-0">
+                    <thead>
+                        <tr>
+                            <th>Plano</th>
+                            <th class="text-end">Preço</th>
+                            <th class="text-end">Assentos</th>
+                            <th class="text-end">O.S./mês</th>
+                            <th class="text-end">Créditos IA</th>
+                            <th>Assinatura</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in plans %}
+                        {% with p=row.plan %}
+                        <tr class="{% if plan and p.pk == plan.pk %}table-primary{% endif %}">
+                            <td>{{ p.name }}{% if plan and p.pk == plan.pk %} <span class="badge bg-primary">Atual</span>{% endif %}</td>
+                            <td class="text-end">{{ row.price_display }}</td>
+                            <td class="text-end">{{ row.seats_display }}</td>
+                            <td class="text-end">{{ row.os_display }}</td>
+                            <td class="text-end">{{ row.ai_display }}</td>
+                            <td>{% if p.required_signature %}Sim{% else %}Não{% endif %}</td>
+                        </tr>
+                        {% endwith %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <p class="text-muted small mt-3">
+        Upgrade/downgrade e gateway de pagamento serão habilitados após o MVP (v1.2).
+        Alterações de plano no MVP são manuais via admin.
+    </p>
+</div>
+{% endblock %}

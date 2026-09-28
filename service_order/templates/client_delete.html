@@ -1,0 +1,18 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<div class="container py-4" style="max-width: 640px;">
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            <h1 class="h4">Excluir cliente</h1>
+            <p>Confirma a exclusão de <strong>{{ client.name }}</strong>?</p>
+            <p class="text-danger small">As balanças e O.S. relacionadas também poderão ser afetadas.</p>
+            <form method="post">
+                {% csrf_token %}
+                <button class="btn btn-danger" type="submit">Excluir</button>
+                <a class="btn btn-outline-secondary" href="{% url 'client_detail' client.pk %}">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

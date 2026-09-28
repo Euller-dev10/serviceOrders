@@ -1,0 +1,39 @@
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+exclude = [
+    "venv",
+    "staticfiles",
+    "**/migrations",
+    "**/__pycache__",
+    "media_test",
+]
+
+[tool.ruff.lint]
+# E701/E702: estilo do legado; W raised ao core em sprints futuras
+select = ["E4", "E7", "E9", "F", "I"]
+ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+"service_order/*" = ["I001"]
+"accounts/*" = ["I001"]
+"app/*" = ["I001"]
+"manage.py" = ["I001"]
+"core/*" = ["I001"]
+"tenants/*" = ["I001"]
+"ai/*" = ["I001"]
+
+[tool.black]
+line-length = 100
+target-version = ['py312']
+extend-exclude = 'venv|staticfiles|migrations'
+
+[tool.mypy]
+python_version = "3.12"
+ignore_missing_imports = true
+exclude = ["venv", "staticfiles", "migrations"]
+plugins = []
+
+[[tool.mypy.overrides]]
+module = ["service_order.*", "accounts.*", "app.*", "core.*", "tenants.*", "ai.*"]
+ignore_errors = true

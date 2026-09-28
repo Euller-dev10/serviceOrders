@@ -13,23 +13,37 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 from pathlib import Path
 import os
 
+from dotenv import load_dotenv
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / '.env')
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-!dj93frgvrn)cz!m(g%-75p4=lwyodxie4qp(_$td*f+5%v_7e'
+SECRET_KEY = os.environ.get(
+    'DJANGO_SECRET_KEY',
+    'dev-only-insecure-key-change-in-production',
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True').lower() in ('1', 'true', 'yes')
 
-ALLOWED_HOSTS = ['*']
+# Domínio próprio real via env (ex.: aferix.com.br). Nunca usar ngrok em produção.
+ALLOWED_HOSTS = [
+    h.strip()
+    for h in os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+    if h.strip()
+]
 
-CSRF_TRUSTED_ORIGINS = ['https://*.ngrok-free.dev',
-    'https://*.ngrok-free.app',]
+CSRF_TRUSTED_ORIGINS = [
+    o.strip()
+    for o in os.environ.get('CSRF_TRUSTED_ORIGINS', 'http://localhost:8000').split(',')
+    if o.strip()
+]
 
 
 # Application definition
@@ -41,9 +55,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'service_order',
-    'django_select2',
+    'core',
+    'tenants',
     'accounts',
+    'service_order',
+    'ai',
+    'django_select2',
 ]
 
 MIDDLEWARE = [
@@ -52,9 +69,21 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'tenants.middleware.TenantMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'core.security.ContentSecurityPolicyMiddleware',
 ]
+
+AUTH_USER_MODEL = 'accounts.User'
+
+AUTHENTICATION_BACKENDS = [
+    'accounts.backends.EmailBackend',
+]
+
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/login/'
 
 ROOT_URLCONF = 'app.urls'
 
@@ -68,6 +97,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'tenants.context_processors.plan_limits',
             ],
         },
     },
@@ -82,11 +112,11 @@ WSGI_APPLICATION = 'app.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'serviceorders',
-        'USER': 'postgres',
-        'PASSWORD': '4500',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': os.environ.get('POSTGRES_DB', 'serviceorders'),
+        'USER': os.environ.get('POSTGRES_USER', 'postgres'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', ''),
+        'HOST': os.environ.get('POSTGRES_HOST', os.environ.get('DATABASE_HOST', 'localhost')),
+        'PORT': os.environ.get('POSTGRES_PORT', os.environ.get('DATABASE_PORT', '5432')),
     }
 }
 
@@ -141,3 +171,43 @@ STATICFILES_DIRS = [
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+
+# IA / LLM (Sprint 2.1 — secrets somente em env)
+AI_DEFAULT_PROVIDER = os.environ.get('AI_DEFAULT_PROVIDER', 'mock')
+AI_DEFAULT_MODEL = os.environ.get('AI_DEFAULT_MODEL', 'gpt-4o-mini')
+AI_EMBEDDING_MODEL = os.environ.get('AI_EMBEDDING_MODEL', 'text-embedding-3-small')
+AI_EMBEDDING_DIM = int(os.environ.get('AI_EMBEDDING_DIM', '1536'))
+AI_HISTORY_MAX_TOKENS = int(os.environ.get('AI_HISTORY_MAX_TOKENS', '6000'))
+AI_RATE_LIMIT_PER_USER = int(os.environ.get('AI_RATE_LIMIT_PER_USER', '20'))
+
+OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY', '')
+ANTHROPIC_API_KEY = os.environ.get('ANTHROPIC_API_KEY', '')
+
+# E-mail transacional (Sprint 3.2) — console no MVP/dev; SMTP em produção via .env
+EMAIL_BACKEND = os.environ.get(
+    'EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend'
+)
+EMAIL_HOST = os.environ.get('EMAIL_HOST', '')
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '587'))
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True').lower() in ('1', 'true', 'yes')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'noreply@aferix.com.br')
+
+# Hardening e rate limiting (Sprint 3.3)
+LOGIN_RATE_LIMIT_PER_WINDOW = int(os.environ.get('LOGIN_RATE_LIMIT_PER_WINDOW', '5'))
+LOGIN_RATE_WINDOW_SECONDS = int(os.environ.get('LOGIN_RATE_WINDOW_SECONDS', '300'))
+SECURE_SSL_REDIRECT = os.environ.get('SECURE_SSL_REDIRECT', 'False').lower() in ('1', 'true', 'yes')
+SESSION_COOKIE_SECURE = os.environ.get('SESSION_COOKIE_SECURE', 'False').lower() in ('1', 'true', 'yes')
+CSRF_COOKIE_SECURE = os.environ.get('CSRF_COOKIE_SECURE', 'False').lower() in ('1', 'true', 'yes')
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SAMESITE = 'Lax'
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_REFERRER_POLICY = 'same-origin'
+SECURE_HSTS_SECONDS = int(os.environ.get('SECURE_HSTS_SECONDS', '0'))
+SECURE_HSTS_INCLUDE_SUBDOMAINS = SECURE_HSTS_SECONDS > 0
+SECURE_HSTS_PRELOAD = SECURE_HSTS_SECONDS >= 31536000
+ENABLE_CSP = os.environ.get('ENABLE_CSP', 'False').lower() in ('1', 'true', 'yes')
+AUDIT_LOG_RETENTION_DAYS = int(os.environ.get('AUDIT_LOG_RETENTION_DAYS', '1825'))

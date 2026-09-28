@@ -1,0 +1,116 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/tokens.css' %}">
+<link rel="stylesheet" href="{% static 'css/technical_report.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+
+<main class="container technical-report-page py-4">
+    <header class="report-toolbar d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+        <div><p class="eyebrow mb-1">O.S. {{ os.display_number }}</p><h1 class="h3 mb-0">Relatório técnico</h1></div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'os_detail' os.pk %}" class="btn btn-outline-secondary">Voltar</a>
+            {% if report and report.status == 'COMPLETED' %}<a href="{% url 'technical_report_print' os.pk %}" class="btn btn-outline-primary" target="_blank">Imprimir</a>{% endif %}
+        </div>
+    </header>
+    {% if report and report.status == 'COMPLETED' and user.role != 'TECHNICIAN' %}
+    <form method="post" action="{% url 'technical_report_cancel' os.pk %}" class="alert alert-warning d-flex flex-wrap align-items-end gap-2 mb-4">
+        {% csrf_token %}<div class="flex-grow-1"><label for="cancel-reason" class="form-label">Motivo do cancelamento</label><input id="cancel-reason" name="reason" class="form-control" required></div><button class="btn btn-warning" type="submit">Cancelar relatório</button>
+    </form>
+    {% elif report and report.status == 'CANCELED' and user.role == 'ADMIN' %}
+    <form method="post" action="{% url 'technical_report_reopen' os.pk %}" class="mb-4">{% csrf_token %}<button class="btn btn-outline-primary" type="submit">Reabrir como rascunho</button></form>
+    {% endif %}
+
+    {% if form.errors or fidelity_formset.errors or eccentricity_formset.errors or weighing_formset.errors %}
+    <div class="report-error-summary mb-4" id="report-errors" role="status">
+        <strong>Revise os campos abaixo para concluir o relatório.</strong>
+        <ul class="errorlist mb-0 mt-2">
+            {% for field in form %}
+                {% for error in field.errors %}<li><a href="#{{ field.id_for_label }}">{{ field.label }}: {{ error }}</a></li>{% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+            {% for row in fidelity_formset %}
+                {% for field in row %}{% for error in field.errors %}<li><a href="#{{ field.id_for_label }}">Fidelidade, linha {{ forloop.parentloop.parentloop.counter }} - {{ field.label }}: {{ error }}</a></li>{% endfor %}{% endfor %}
+                {% for error in row.non_field_errors %}<li>Fidelidade, linha {{ forloop.counter }}: {{ error }}</li>{% endfor %}
+            {% endfor %}
+            {% for row in eccentricity_formset %}
+                {% for field in row %}{% for error in field.errors %}<li><a href="#{{ field.id_for_label }}">Excentricidade, linha {{ forloop.parentloop.parentloop.counter }} - {{ field.label }}: {{ error }}</a></li>{% endfor %}{% endfor %}
+                {% for error in row.non_field_errors %}<li>Excentricidade, linha {{ forloop.counter }}: {{ error }}</li>{% endfor %}
+            {% endfor %}
+            {% for row in weighing_formset %}
+                {% for field in row %}{% for error in field.errors %}<li><a href="#{{ field.id_for_label }}">Pesagem, linha {{ forloop.parentloop.parentloop.counter }} - {{ field.label }}: {{ error }}</a></li>{% endfor %}{% endfor %}
+                {% for error in row.non_field_errors %}<li>Pesagem, linha {{ forloop.counter }}: {{ error }}</li>{% endfor %}
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    <form method="post" id="technical-report-form" novalidate>
+        {% csrf_token %}
+        {{ fidelity_formset.management_form }}
+        {{ eccentricity_formset.management_form }}
+        {{ weighing_formset.management_form }}
+        {{ form.action }}
+
+        <section class="card-ds report-section mb-4" aria-labelledby="identification-title">
+            <h2 id="identification-title" class="section-title">Identificação</h2>
+            <div class="readonly-grid">
+                <div><span>Cliente</span><strong>{{ os.client.name }}</strong></div>
+                <div><span>CNPJ/CPF</span><strong>{{ os.client.document }}</strong></div>
+                <div><span>Inscrição estadual/RG</span><strong>{{ os.client.state_registration|default:'-' }}</strong></div>
+                <div><span>Endereço</span><strong>{{ os.client.address|default:'-' }}, {{ os.client.district|default:'-' }}</strong></div>
+                <div><span>Cidade/UF</span><strong>{{ os.client.city|default:'-' }} / {{ os.client.uf|default:'-' }}</strong></div>
+                <div><span>CEP</span><strong>{{ os.client.cep|default:'-' }}</strong></div>
+            </div>
+        </section>
+
+        <section class="card-ds report-section mb-4" aria-labelledby="scale-title">
+            <h2 id="scale-title" class="section-title">Balança</h2>
+            <div class="readonly-grid">
+                <div><span>Marca / modelo</span><strong>{{ os.scale.brand }} / {{ os.scale.model }}</strong></div>
+                <div><span>Série</span><strong>{{ os.scale.serie }}</strong></div>
+                <div><span>Capacidade máxima</span><strong>{{ os.scale.capacity }} {{ os.scale.unit }}</strong></div>
+                <div><span>E (kg)</span><strong>{{ os.scale.division }}</strong></div>
+                <div><span>TAG</span><strong>{{ os.scale.tag|default:'-' }}</strong></div>
+                <div><span>Portaria / Inmetro</span><strong>{{ os.scale.portaria|default:'-' }} / {{ os.scale.inv_inmetro|default:'-' }}</strong></div>
+            </div>
+        </section>
+
+        <section class="card-ds report-section mb-4" aria-labelledby="report-data-title">
+            <h2 id="report-data-title" class="section-title">Dados do relatório</h2>
+            <div class="field-grid">
+                {% for field in form %}
+                    {% if field.name != 'action' and field.name != 'observation' %}
+                    <div class="field-wrap{% if field.errors %} has-error{% endif %}"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{{ field.errors }}</div>
+                    {% endif %}
+                {% endfor %}
+                <div class="readonly-grid field-wide report-derived-data">
+                     <div><span>Técnico</span><strong>{{ os.user.get_full_name|default:os.user.email|default:'-' }}</strong></div>
+                     <div><span>Número do relatório</span><strong>{{ report.display_number|default:'Será gerado ao salvar' }}</strong></div>
+                     <div><span>Data do serviço</span><strong>{{ os.date|date:'d/m/Y H:i' }}</strong></div>
+                    <div><span>Cidade do serviço</span><strong>{{ os.client.city|default:'-' }}</strong></div>
+                    <div><span>Selo aplicado</span><strong>{{ os.stamp.number.number|default:'-' }}</strong></div>
+                    <div><span>Selo retirado</span><strong>{{ os.stamp_retired|default:'-' }}</strong></div>
+                    <div><span>Responsável que assinou</span><strong>{{ os.client_signer_name|default:'-' }}</strong></div>
+                </div>
+                <div class="field-wrap field-wide{% if form.observation.errors %} has-error{% endif %}"><label for="{{ form.observation.id_for_label }}">{{ form.observation.label }}</label>{{ form.observation }}{{ form.observation.errors }}</div>
+            </div>
+        </section>
+
+        {% include 'technical_report_table.html' with title='Ensaio de fidelidade' formset=fidelity_formset %}
+        {% include 'technical_report_table.html' with title='Ensaio de excentricidade — carga em diferentes pontos da plataforma' formset=eccentricity_formset %}
+        {% include 'technical_report_table.html' with title='Ensaio de pesagem — determinação do erro em função da carga' formset=weighing_formset %}
+
+        <section class="card-ds report-section mb-4">
+            <h2 class="section-title">Responsável técnico</h2>
+            <p class="mb-0">{{ os.user.get_full_name|default:os.user.email|default:'-' }}</p>
+            <p class="text-muted small mb-0">O responsável técnico é o usuário autenticado da O.S. A assinatura do proprietário é reaproveitada da O.S.</p>
+        </section>
+
+        <div class="d-flex flex-wrap justify-content-end gap-2 report-actions">
+            <button class="btn btn-outline-primary" type="submit" name="action" value="save">Salvar rascunho</button>
+            <button class="btn btn-primary" type="submit" name="action" value="complete">Concluir relatório</button>
+        </div>
+    </form>
+</main>
+{% endblock %}

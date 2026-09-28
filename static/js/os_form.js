@@ -1,5 +1,35 @@
 document.addEventListener("DOMContentLoaded", function () {
 
+    function calculateTotalHours(row) {
+        const start = row.querySelector("input[name$='-start']");
+        const stop = row.querySelector("input[name$='-stop']");
+        const total = row.querySelector("input[name$='-total_hours']");
+        if (!start || !stop || !total || !start.value || !stop.value) return;
+
+        const [startHour, startMinute] = start.value.split(':').map(Number);
+        const [stopHour, stopMinute] = stop.value.split(':').map(Number);
+        let minutes = (stopHour * 60 + stopMinute) - (startHour * 60 + startMinute);
+        if (minutes < 0) minutes += 24 * 60;
+
+        const hours = Math.floor(minutes / 60).toString().padStart(2, '0');
+        const remainder = (minutes % 60).toString().padStart(2, '0');
+        total.value = `${hours}:${remainder}`;
+    }
+
+    function bindTimeCalculation(container) {
+        container.querySelectorAll('.formset-row').forEach(calculateTotalHours);
+        container.addEventListener('input', function (event) {
+            if (event.target.matches("input[name$='-start'], input[name$='-stop']")) {
+                calculateTotalHours(event.target.closest('.formset-row'));
+            }
+        });
+        container.addEventListener('change', function (event) {
+            if (event.target.matches("input[name$='-start'], input[name$='-stop']")) {
+                calculateTotalHours(event.target.closest('.formset-row'));
+            }
+        });
+    }
+
     function setupFormset(addBtnId, containerId, templateId, prefix) {
         const addBtn = document.getElementById(addBtnId);
         const container = document.getElementById(containerId);
@@ -53,6 +83,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Inicializa Peças e Tempo de Serviço
-    setupFormset("add-part-btn", "parts-container", "empty-part-template", "parts_useds");
+    setupFormset("add-part-btn", "parts-container", "empty-part-template", "service_order_part");
     setupFormset("add-time-btn", "time-container", "empty-time-template", "time_service");
+
+    const timeContainer = document.getElementById('time-container');
+    if (timeContainer) bindTimeCalculation(timeContainer);
 });

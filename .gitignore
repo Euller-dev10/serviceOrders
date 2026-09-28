@@ -1,5 +1,35 @@
-venv
-db.sqlite3
-media
+# Local Python environments and tooling
+venv/
+.venv/
 __pycache__/
-*.pyc
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+*.p12
+
+# Local databases, dumps and generated runtime files
+*.sqlite3
+*.sqlite3-journal
+*.dump
+*.log
+db_cache/
+
+# User uploads and generated static files
+media/
+media_test/
+staticfiles/
+
+# Local/editor/OS files
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db

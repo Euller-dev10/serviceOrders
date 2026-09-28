@@ -67,7 +67,7 @@
         }
         @page { size: A4; margin: 1.2cm; }
         body { font-size: 12px !important; background-color: #fff !important; color: #000 !important; }
-        .mb-4, .row { page-break-inside: avoid; break-inside: avoid; margin-bottom: 1.2rem !important; }
+         .mb-4, .row { page-break-inside: avoid; break-inside: avoid; margin-bottom: 0.55rem !important; }
         * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
         input, select, textarea {
             background: #fff !important;
@@ -403,6 +403,11 @@
             </table>
         </div>
 
+        <div class="mb-3">
+            <label for="id_client_signer_name" class="form-label fw-bold text-secondary small">Nome do responsável que assina</label>
+            {{ form.client_signer_name }}
+        </div>
+
         <div class="row pt-5 mt-4 text-center g-4 signature-section">
             <div class="col-6 d-flex flex-column justify-content-end align-items-center">
                 <div class="text-dark fw-bolder text-uppercase lh-1 mb-1 tracking-wide" style="font-size: 1.15rem; letter-spacing: 0.5px;">
@@ -446,5 +451,4 @@
 
 <script src="{% static 'js/signature.js' %}"></script>
 <script src="{% static 'js/os_form.js' %}"></script>
-<script src="{% static 'js/delete_form.js' %}"></script>
 {% endblock %}

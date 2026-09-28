@@ -1,0 +1,53 @@
+{% extends "admin/change_list.html" %}
+{% load i18n %}
+
+{% block content_title %}
+  <h1>{{ metrics_title|default:"Métricas de IA" }}</h1>
+{% endblock %}
+
+{% block result_list %}
+  <div class="module" style="margin-bottom: 1.5rem;">
+    <h2>Tokens por tenant (30 dias)</h2>
+    <table>
+      <thead>
+        <tr><th>Tenant</th><th>Requests</th><th>Prompt</th><th>Completion</th><th>Cached</th></tr>
+      </thead>
+      <tbody>
+        {% for row in tokens_by_tenant %}
+        <tr>
+          <td>{{ row.tenant__name|default:"—" }}</td>
+          <td>{{ row.requests }}</td>
+          <td>{{ row.total_prompt|default:0 }}</td>
+          <td>{{ row.total_completion|default:0 }}</td>
+          <td>{{ row.total_cached|default:0 }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5">Sem uso nos últimos 30 dias.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="module">
+    <h2>Tokens por dia (30 dias)</h2>
+    <table>
+      <thead>
+        <tr><th>Dia</th><th>Requests</th><th>Prompt</th><th>Completion</th></tr>
+      </thead>
+      <tbody>
+        {% for row in tokens_by_day %}
+        <tr>
+          <td>{{ row.day }}</td>
+          <td>{{ row.requests }}</td>
+          <td>{{ row.total_prompt|default:0 }}</td>
+          <td>{{ row.total_completion|default:0 }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4">Sem dados.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {{ block.super }}
+{% endblock %}

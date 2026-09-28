@@ -1,0 +1,55 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-4" style="max-width: 640px;">
+    <h1 class="h3 mb-4 text-dark fw-bold">{{ action }}</h1>
+
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-body p-4">
+            {% if messages %}
+                {% for message in messages %}
+                <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-info{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {% for field in form.visible_fields %}
+                <div class="mb-3">
+                    <label for="{{ field.id_for_label }}" class="form-label fw-semibold">
+                        {{ field.label }}
+                    </label>
+                    {{ field }}
+                    {% if field.help_text %}
+                    <div class="form-text">{{ field.help_text|safe }}</div>
+                    {% endif %}
+                    {% for error in field.errors %}
+                    <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+                {% if form.non_field_errors %}
+                    {% for error in form.non_field_errors %}
+                    <div class="alert alert-danger py-2">{{ error }}</div>
+                    {% endfor %}
+                {% endif %}
+
+                {% if action and 'Editar' in action %}
+                <p class="text-muted small mb-0">
+                    Usuário: {{ edited_user.email }} — troca de senha somente pelo técnico
+                    (redefinição futura) ou Django Admin.
+                </p>
+                {% endif %}
+
+                <div class="d-flex gap-2 mt-4">
+                    <button type="submit" class="btn btn-primary rounded-3 px-4">Salvar</button>
+                    <a href="{% url 'user_list' %}" class="btn btn-outline-secondary rounded-3">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

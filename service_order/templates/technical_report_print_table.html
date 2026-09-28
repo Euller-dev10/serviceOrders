@@ -1,0 +1,9 @@
+<div class="mb-3 print-block">
+    <h5 class="text-primary fw-bold text-uppercase small mb-1"><i class="bi bi-table"></i> {{ title }}</h5>
+    <div class="p-2 bg-white rounded border border-primary-subtle shadow-sm table-responsive">
+        <table class="table table-sm table-bordered mb-0 font-monospace text-center align-middle">
+            <thead class="table-light"><tr><th>#</th><th>Carga (kg)</th><th>Indicação (kg)</th><th>Erro (kg)</th><th>E.M.A. (kg)</th></tr></thead>
+            <tbody>{% for row in rows %}{% if not hide_blank or row.load_kg|default_if_none:''|stringformat:'s' or row.indication_kg|default_if_none:''|stringformat:'s' or row.error_kg|default_if_none:''|stringformat:'s' or row.ema_kg|default_if_none:''|stringformat:'s' %}<tr><td>{{ row.sequence }}</td><td>{{ row.load_kg|default:''|floatformat:'0' }}</td><td>{{ row.indication_kg|default:''|floatformat:'0' }}</td><td>{{ row.error_kg|default:''|floatformat:'0' }}</td><td>{{ row.ema_kg|default:''|floatformat:'0' }}</td></tr>{% endif %}{% endfor %}</tbody>
+        </table>
+    </div>
+</div>

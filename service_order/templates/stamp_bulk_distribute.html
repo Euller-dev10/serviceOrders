@@ -1,0 +1,39 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<div class="container py-4" style="max-width: 720px;">
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4">
+            <h1 class="h4 mb-1">Distribuir selos em lote</h1>
+            <p class="text-muted small">Marque os selos disponíveis que serão entregues. A operação é transacional.</p>
+            <form method="post">
+                {% csrf_token %}
+                {% for field in form.visible_fields %}
+                <div class="mb-3">
+                    <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {% if field.name == 'stamps' %}
+                    <div class="mb-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" id="selectAllStamps">Selecionar todos</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" id="clearStamps">Limpar seleção</button>
+                    </div>
+                    {% endif %}
+                    {{ field }}
+                    {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+                    {% for error in field.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                </div>
+                {% endfor %}
+                {% for error in form.non_field_errors %}<div class="alert alert-danger">{{ error }}</div>{% endfor %}
+                <button class="btn btn-primary" type="submit">Distribuir selos</button>
+                <a class="btn btn-outline-secondary" href="{% url 'stamp_list' %}">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+(function () {
+    const boxes = () => document.querySelectorAll('#id_stamps input[type="checkbox"]');
+    document.getElementById('selectAllStamps')?.addEventListener('click', () => boxes().forEach(box => box.checked = true));
+    document.getElementById('clearStamps')?.addEventListener('click', () => boxes().forEach(box => box.checked = false));
+})();
+</script>
+{% endblock %}

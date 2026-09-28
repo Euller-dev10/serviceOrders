@@ -1,0 +1,181 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-4" style="max-width: 900px;">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h4 mb-0"><i class="fas fa-wand-magic-sparkles text-primary me-2"></i>{{ session.title|default:"Conversa" }}</h2>
+        <a href="{% url 'chat_index' %}" class="btn btn-outline-secondary btn-sm rounded-3">
+            <i class="bi bi-arrow-left"></i> Sessões
+        </a>
+    </div>
+
+    <div id="chatThread" class="card border-0 shadow-sm rounded-4 mb-3">
+        <div class="card-body p-3" style="min-height: 320px; max-height: 60vh; overflow-y: auto;">
+            {% for m in messages %}
+            <div class="mb-3 d-flex {% if m.role == 'user' %}justify-content-end{% else %}justify-content-start{% endif %}">
+                <div class="rounded-3 px-3 py-2 shadow-sm
+                    {% if m.role == 'user' %}bg-primary text-white{% else %}bg-light border{% endif %}"
+                    style="max-width: 85%;">
+                    <div class="chat-md">{{ m.html|safe }}</div>
+                    {% if m.citations %}
+                    <div class="mt-1 small">
+                        {% for c in m.citations %}
+                        <span class="badge bg-info text-dark me-1">{{ c }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center text-muted py-5" id="emptyChat">
+                Pergunte sobre O.S., clientes, balanças ou normas da sua empresa.
+            </div>
+            {% endfor %}
+            <div id="streamingBubble" class="d-none mb-3">
+                <div class="rounded-3 px-3 py-2 bg-light border chat-md" id="streamingText" style="max-width:85%;"></div>
+            </div>
+        </div>
+    </div>
+
+    <form id="chatForm" method="post" action="{% url 'chat_message_send' session.pk %}?stream=1"
+          class="d-flex gap-2">
+        {% csrf_token %}
+        <input type="text" id="chatInput" name="content" class="form-control rounded-3"
+               placeholder="Digite sua pergunta…" autocomplete="off" required maxlength="2000">
+        <button type="submit" class="btn btn-primary rounded-3 px-4" id="chatSend">
+            <i class="bi bi-send"></i> Enviar
+        </button>
+    </form>
+    <div id="chatError" class="alert alert-danger mt-2 d-none border-0 rounded-3"></div>
+</div>
+
+<script>
+(function () {
+    const form = document.getElementById('chatForm');
+    const input = document.getElementById('chatInput');
+    const thread = document.getElementById('chatThread').querySelector('.card-body');
+    const bubble = document.getElementById('streamingBubble');
+    const streamText = document.getElementById('streamingText');
+    const errBox = document.getElementById('chatError');
+    const sendBtn = document.getElementById('chatSend');
+    let acc = '';
+
+    function appendUser(text) {
+        const wrap = document.createElement('div');
+        wrap.className = 'mb-3 d-flex justify-content-end';
+        wrap.innerHTML = '<div class="rounded-3 px-3 py-2 bg-primary text-white shadow-sm" style="max-width:85%"></div>';
+        wrap.firstChild.textContent = text;
+        thread.appendChild(wrap);
+        thread.scrollTop = thread.scrollHeight;
+    }
+
+    function escapeHtml(s) {
+        return s.replace(/[&<>"']/g, c => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        }[c]));
+    }
+
+    function renderMarkdownSafe(raw) {
+        // já escapamos; allow subset via servidor no done; aqui apenas texto parcial
+        return escapeHtml(raw).replace(/\n/g, '<br>');
+    }
+
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const text = input.value.trim();
+        if (!text) return;
+        errBox.classList.add('d-none');
+        appendUser(text);
+        input.value = '';
+        acc = '';
+        streamText.innerHTML = '';
+        bubble.classList.remove('d-none');
+        sendBtn.disabled = true;
+
+        fetch(form.action, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Accept': 'text/event-stream',
+            },
+            body: new URLSearchParams({ content: text }),
+        }).then(response => {
+            if (!response.ok) {
+                return response.text().then(raw => {
+                    let message = 'Falha na requisição';
+                    try {
+                        const payload = JSON.parse(raw);
+                        message = payload.error || message;
+                    } catch (parseError) {
+                        if (raw && raw.length < 300) message = raw;
+                    }
+                    throw new Error(message);
+                });
+            }
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let buffer = '';
+
+            function pump() {
+                return reader.read().then(({ done, value }) => {
+                    if (done) return;
+                    buffer += decoder.decode(value, { stream: true });
+                    const parts = buffer.split('\n\n');
+                    buffer = parts.pop() || '';
+                    parts.forEach(part => {
+                        const lines = part.split('\n');
+                        let event = 'message';
+                        let data = '';
+                        lines.forEach(line => {
+                            if (line.startsWith('event: ')) event = line.slice(7).trim();
+                            if (line.startsWith('data: ')) data = line.slice(6);
+                        });
+                        if (!data) return;
+                        try {
+                            const payload = JSON.parse(data);
+                            if (event === 'token') {
+                                acc += payload.text || '';
+                                streamText.innerHTML = renderMarkdownSafe(acc);
+                                thread.scrollTop = thread.scrollHeight;
+                            } else if (event === 'done') {
+                                bubble.classList.add('d-none');
+                                const wrap = document.createElement('div');
+                                wrap.className = 'mb-3 d-flex justify-content-start';
+                                const inner = document.createElement('div');
+                                inner.className = 'rounded-3 px-3 py-2 bg-light border chat-md';
+                                inner.style.maxWidth = '85%';
+                                inner.innerHTML = payload.html || renderMarkdownSafe(payload.answer || '');
+                                if (payload.citations && payload.citations.length) {
+                                    const cites = document.createElement('div');
+                                    cites.className = 'mt-1 small';
+                                    payload.citations.forEach(c => {
+                                        const badge = document.createElement('span');
+                                        badge.className = 'badge bg-info text-dark me-1';
+                                        badge.textContent = c;
+                                        cites.appendChild(badge);
+                                    });
+                                    inner.appendChild(cites);
+                                }
+                                wrap.appendChild(inner);
+                                thread.appendChild(wrap);
+                                thread.scrollTop = thread.scrollHeight;
+                            }
+                        } catch (err) { /* ignora frame parcial */ }
+                    });
+                    return pump();
+                });
+            }
+            return pump();
+        }).catch(err => {
+            bubble.classList.add('d-none');
+            errBox.textContent = err.message || 'Erro ao enviar mensagem. Tente novamente.';
+            errBox.classList.remove('d-none');
+        }).finally(() => {
+            sendBtn.disabled = false;
+            input.focus();
+        });
+    });
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h4 mb-0">Fontes RAG (corpus)</h2>
+        <a href="{% url 'source_create' %}" class="btn btn-primary rounded-3">
+            <i class="bi bi-upload"></i> Enviar documento
+        </a>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:'info' }} border-0 rounded-3">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light border-bottom text-secondary">
+                    <tr>
+                        <th class="ps-4 py-3 text-uppercase small fw-bold">Título</th>
+                        <th class="py-3 text-uppercase small fw-bold">Tipo</th>
+                        <th class="py-3 text-uppercase small fw-bold">Embed</th>
+                        <th class="py-3 text-uppercase small fw-bold">Atualizado</th>
+                        <th class="text-end pe-4 py-3 text-uppercase small fw-bold">Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for doc in documents %}
+                    <tr>
+                        <td class="ps-4 py-3 fw-semibold">{{ doc.title }}</td>
+                        <td class="py-3"><span class="badge bg-secondary">{{ doc.get_doc_type_display }}</span></td>
+                        <td class="py-3">
+                            {% if doc.embedding %}<span class="badge bg-success">ok</span>{% else %}<span class="badge bg-warning text-dark">pendente</span>{% endif %}
+                        </td>
+                        <td class="py-3 text-muted small">{{ doc.updated_at|date:"d/m/Y H:i" }}</td>
+                        <td class="text-end pe-4 py-3">
+                            <form method="post" action="{% url 'source_delete' doc.pk %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-danger rounded-3"
+                                        onclick="return confirm('Remover este documento?');">
+                                    Excluir
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="5" class="text-center py-5 text-muted">Nenhum documento indexado.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <p class="text-muted small mt-3">
+        Após enviar, rode <code>python manage.py embed_sources</code> para regerar chunks/embeddings em lote.
+    </p>
+</div>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body p-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <div class="d-flex align-items-center">
+                <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-3 me-3 d-flex align-items-center justify-content-center" style="width:54px;height:54px;">
+                    <i class="fas fa-wand-magic-sparkles fs-4"></i>
+                </div>
+                <div>
+                    <span class="text-muted small text-uppercase fw-bold">Assistente</span>
+                    <h2 class="h4 mb-0">Aferix IA</h2>
+                </div>
+            </div>
+            <form method="post" action="{% url 'chat_session_create' %}" class="m-0">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary rounded-3 px-3 py-2 fw-semibold">
+                    <i class="bi bi-plus-lg"></i> Nova conversa
+                </button>
+            </form>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:'info' }} border-0 rounded-3">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="list-group list-group-flush">
+            {% for session in sessions %}
+            <a href="{% url 'chat_detail' session.pk %}" class="list-group-item list-group-item-action p-3 d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="fw-semibold">{{ session.title|default:"Sem título" }}</div>
+                    <small class="text-muted">{{ session.updated_at|date:"d/m/Y H:i" }}</small>
+                </div>
+                <i class="bi bi-chevron-right text-muted"></i>
+            </a>
+            {% empty %}
+            <div class="p-5 text-center text-muted">
+                Nenhuma conversa ainda. Clique em <strong>Nova conversa</strong>.
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

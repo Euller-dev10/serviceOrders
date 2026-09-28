@@ -1,0 +1,61 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Aceitar convite — Aferix</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+    <div class="container py-5" style="max-width: 480px;">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body p-4">
+                {% if invalid %}
+                <h1 class="h4 text-danger">Convite inválido ou expirado</h1>
+                <p class="text-muted">
+                    O link de convite não é mais válido (expira em 72 horas).
+                    Solicite um novo convite ao administrador da sua empresa.
+                </p>
+                <a href="/login/" class="btn btn-outline-secondary rounded-3">Ir para o login</a>
+                {% else %}
+                <h1 class="h4 text-dark fw-bold mb-1">Criar sua senha</h1>
+                <p class="text-muted small">
+                    Olá, {{ user.email }}. Defina sua senha para acessar o sistema.
+                </p>
+
+                {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-info{% endif %} py-2">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="{{ form.password1.id_for_label }}" class="form-label fw-semibold">Nova senha</label>
+                        {{ form.password1 }}
+                        {% for error in form.password1.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="{{ form.password2.id_for_label }}" class="form-label fw-semibold">Confirmar senha</label>
+                        {{ form.password2 }}
+                        {% for error in form.password2.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {% for error in form.non_field_errors %}
+                    <div class="alert alert-danger py-2">{{ error }}</div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-primary rounded-3 w-100">Definir senha e acessar</button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

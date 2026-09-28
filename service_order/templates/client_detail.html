@@ -26,6 +26,9 @@
                     <a href="{% url 'client_update' client.pk %}" class="btn btn-sm btn-outline-secondary rounded-3 px-3 fw-semibold d-inline-flex align-items-center gap-2">
                         <i class="fas fa-edit"></i> Editar Cliente
                     </a>
+                    <a href="{% url 'client_delete' client.pk %}" class="btn btn-sm btn-outline-danger rounded-3 px-3 fw-semibold d-inline-flex align-items-center gap-2">
+                        <i class="fas fa-trash"></i> Excluir
+                    </a>
                 </div>
             </div>
             
@@ -80,16 +83,21 @@
                 </div>
             </div>
             
-            {% if scales %}
-            <div class="col-12 col-md-5 col-lg-4">
+            <div class="d-flex flex-column flex-md-row align-items-md-center gap-2">
+                <a href="{% url 'new_scale' %}?client={{ client.pk }}" class="btn btn-primary rounded-3 fw-semibold">
+                    <i class="fas fa-plus me-1"></i> Cadastrar balança
+                </a>
+                {% if scales %}
+                <div class="col-12 col-md-5 col-lg-4">
                 <div class="input-group">
                     <span class="input-group-text bg-white border-end-0 rounded-3 text-muted ps-3">
                         <i class="fas fa-search"></i>
                     </span>
                     <input type="text" id="searchScaleInput" class="form-control border-start-0 rounded-3 py-2" placeholder="Buscar por Nº de Série...">
                 </div>
+                </div>
+                {% endif %}
             </div>
-            {% endif %}
         </div>
     </div>
 

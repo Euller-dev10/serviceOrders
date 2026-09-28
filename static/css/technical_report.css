@@ -1,0 +1,28 @@
+.technical-report-page { max-width: 900px; margin-top: 3rem; margin-bottom: 3rem; font-family: var(--font-sans); color: #212529; }
+.report-toolbar { border-bottom: 2px solid #cfe2ff; padding-bottom: 1.5rem; }
+.eyebrow { color: var(--color-text-muted); font-size: var(--font-size-sm); text-transform: uppercase; letter-spacing: .04em; }
+.report-section { padding: 1rem; background: #fff; border: 1px solid #cfe2ff; border-radius: .25rem; }
+.section-title { color: #0d6efd; font-size: .875rem; font-weight: 700; text-transform: uppercase; margin: 0 0 1rem; }
+.readonly-grid, .field-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-4); }
+.readonly-grid div { display: grid; gap: var(--space-1); }
+.readonly-grid span, .field-wrap label { color: var(--color-text-muted); font-size: var(--font-size-sm); }
+.readonly-grid strong { font-size: var(--font-size-md); overflow-wrap: anywhere; }
+.field-wrap { display: grid; gap: var(--space-1); }
+.field-wide { grid-column: 1 / -1; }
+.field-wrap input, .field-wrap select, .field-wrap textarea, .measurement-table input { width: 100%; border: 1px solid #ced4da; border-radius: .25rem; padding: .375rem .75rem; font: inherit; }
+.field-wrap input:focus, .field-wrap select:focus, .field-wrap textarea:focus, .measurement-table input:focus { outline: none; border-color: var(--color-primary); box-shadow: var(--focus-ring); }
+.has-error input, .has-error select, .has-error textarea { border-color: #d39e00; }
+.measurement-table td.has-error { background: #fffaf0; }
+.errorlist { color: var(--color-danger); font-size: var(--font-size-sm); list-style: none; padding: 0; margin: 0; }
+.errorlist a { color: inherit; font-weight: 600; text-decoration: underline; }
+.report-error-summary { padding: .75rem 1rem; color: #664d03; background: #fff8e1; border: 1px solid #ffecb5; border-radius: .25rem; }
+.report-error-summary .errorlist { color: #664d03; }
+.measurement-table { width: 100%; }
+.measurement-table th, .measurement-table td { vertical-align: middle; }
+.measurement-table th:first-child, .measurement-table td:first-child { width: 5%; text-align: center; }
+.measurement-table input[name$="-sequence"] { background: var(--color-background); text-align: center; }
+.signature-panel { display: grid; gap: var(--space-3); max-width: 560px; }
+.signature-canvas { width: 100%; height: 170px; border: 1px dashed var(--color-border); border-radius: var(--radius-md); background: var(--color-background); touch-action: none; }
+.report-actions { border-top: 1px solid #cfe2ff; padding-top: 1rem; }
+@media (max-width: 767px) { .readonly-grid, .field-grid { grid-template-columns: 1fr; } .field-wide { grid-column: auto; } .report-section { padding: var(--space-4); } .measurement-table { min-width: 700px; } }
+@media print { .report-toolbar, .report-actions, .signature-panel button, #sidebar-wrapper, .navbar { display: none !important; } .technical-report-page { max-width: 100%; } }

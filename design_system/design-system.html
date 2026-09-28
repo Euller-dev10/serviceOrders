@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aferix — Design System (fonte da verdade visual)</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<style>
+  /* ========== DS-01: tokens (espelho do PRD §10.3) ========== */
+  :root {
+    --color-primary: #0d6efd;
+    --color-primary-hover: #0b5ed7;
+    --color-primary-rgb: 13, 110, 253;
+    --color-secondary: #6c757d;
+    --color-success: #198754;
+    --color-danger: #dc3545;
+    --color-warning: #ffc107;
+    --color-info: #0dcaf0;
+    --color-surface: #ffffff;
+    --color-background: #f4f6f9;
+    --color-border: #dee2e6;
+    --color-text: #212529;
+    --color-text-muted: #6c757d;
+    --color-sidebar-bg: #212529;
+    --color-sidebar-text: #dee2e6;
+    --color-sidebar-active: #0d6efd;
+
+    --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', SFMono-Regular, Menlo, Consolas, monospace;
+
+    --font-size-xs: 0.75rem;   /* 12 */
+    --font-size-sm: 0.875rem;  /* 14 */
+    --font-size-md: 1rem;      /* 16 */
+    --font-size-lg: 1.25rem;   /* 20 */
+    --font-size-xl: 1.5rem;    /* 24 */
+    --font-size-2xl: 2rem;     /* 32 */
+
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-6: 1.5rem;
+    --space-8: 2rem;
+    --space-12: 3rem;
+
+    --radius-sm: 0.25rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+    --radius-pill: 50rem;
+
+    --shadow-sm: 0 .125rem .25rem rgba(0,0,0,.075);
+    --shadow-md: 0 .5rem 1rem rgba(0,0,0,.15);
+    --shadow-lg: 0 1rem 3rem rgba(0,0,0,.175);
+
+    --focus-ring: 0 0 0 .25rem rgba(var(--color-primary-rgb), .25);
+    --transition: .15s ease-in-out;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-md);
+    color: var(--color-text);
+    background: var(--color-background);
+  }
+
+  h1 { font-size: var(--font-size-2xl); font-weight: 700; }
+  h2 { font-size: var(--font-size-xl); font-weight: 600; }
+  h3 { font-size: var(--font-size-lg); font-weight: 600; }
+  p, label, td, th { font-size: var(--font-size-md); }
+  .text-muted-ds { color: var(--color-text-muted); }
+  .mono { font-family: var(--font-mono); }
+
+  .ds-section {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    margin-bottom: var(--space-6);
+  }
+
+  /* ========== DS-04: estados interativos ========== */
+  .btn-ds {
+    --bs-btn-bg: var(--color-primary);
+    --bs-btn-border-color: var(--color-primary);
+    --bs-btn-hover-bg: var(--color-primary-hover);
+    --bs-btn-hover-border-color: var(--color-primary-hover);
+    --bs-btn-focus-shadow: var(--focus-ring);
+    border-radius: var(--radius-md);
+    font-weight: 500;
+    transition: background var(--transition), box-shadow var(--transition);
+  }
+  .btn-ds:focus-visible,
+  .form-control:focus,
+  .form-select:focus {
+    outline: none;
+    box-shadow: var(--focus-ring);
+    border-color: var(--color-primary);
+  }
+  .btn-ds:disabled { opacity: .65; cursor: not-allowed; }
+
+  .form-control, .form-select {
+    border-radius: var(--radius-md);
+    border-color: var(--color-border);
+    font-size: var(--font-size-md);
+  }
+  .form-control:disabled, .form-select:disabled {
+    background: var(--color-background);
+    color: var(--color-text-muted);
+  }
+  .is-invalid { border-color: var(--color-danger) !important; }
+  .valid-feedback-ds { color: var(--color-success); font-size: var(--font-size-sm); }
+  .invalid-feedback-ds { color: var(--color-danger); font-size: var(--font-size-sm); }
+
+  /* ========== Tabela ========== */
+  .table-ds { background: var(--color-surface); border-radius: var(--radius-md); overflow: hidden; }
+  .table-ds thead th {
+    background: var(--color-background);
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--color-text-muted);
+    border-bottom: 1px solid var(--color-border);
+    padding: var(--space-3) var(--space-4);
+  }
+  .table-ds tbody td {
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+    font-size: var(--font-size-sm);
+  }
+  .table-ds tbody tr:hover { background: rgba(var(--color-primary-rgb), .04); }
+  .table-ds tbody tr[data-href] { cursor: pointer; }
+
+  /* ========== Card ========== */
+  .card-ds {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+  }
+  .card-ds .card-body { padding: var(--space-6); }
+
+  /* ========== Badge / status ========== */
+  .badge-ds { border-radius: var(--radius-pill); font-size: var(--font-size-xs); font-weight: 600; padding: .35em .75em; }
+  .badge-ds-available { background: rgba(25,135,84,.15); color: var(--color-success); }
+  .badge-ds-distributed { background: rgba(13,110,253,.15); color: var(--color-primary); }
+  .badge-ds-used { background: rgba(108,117,125,.15); color: var(--color-secondary); }
+  .badge-ds-damaged { background: rgba(220,53,69,.15); color: var(--color-danger); }
+
+  /* ========== Toast ========== */
+  .toast-ds {
+    background: var(--color-surface);
+    border-left: 4px solid var(--color-primary);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    padding: var(--space-4);
+  }
+  .toast-ds.toast-success { border-left-color: var(--color-success); }
+  .toast-ds.toast-danger { border-left-color: var(--color-danger); }
+
+  /* ========== Modal ========== */
+  .modal-content-ds {
+    border: none;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* ========== Sidebar (DS-03) ========== */
+  .ds-sidebar {
+    background: var(--color-sidebar-bg);
+    color: var(--color-sidebar-text);
+    width: 260px;
+    min-height: 100vh;
+    padding: var(--space-4) 0;
+  }
+  .ds-sidebar .brand {
+    font-weight: 700;
+    font-size: var(--font-size-lg);
+    color: #fff;
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid rgba(255,255,255,.08);
+    margin-bottom: var(--space-3);
+  }
+  .ds-sidebar .nav-section-title {
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: #adb5bd;
+    padding: var(--space-3) var(--space-4) var(--space-1);
+  }
+  .ds-sidebar a.nav-item-ds {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    color: var(--color-sidebar-text);
+    text-decoration: none;
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--font-size-sm);
+    border-left: 3px solid transparent;
+    transition: background var(--transition), color var(--transition);
+  }
+  .ds-sidebar a.nav-item-ds:hover { background: rgba(255,255,255,.06); color: #fff; }
+  .ds-sidebar a.nav-item-ds.active {
+    background: rgba(var(--color-primary-rgb), .18);
+    color: #fff;
+    border-left-color: var(--color-sidebar-active);
+  }
+  .ds-sidebar a.nav-item-ds:focus-visible { outline: 2px solid var(--color-primary); outline-offset: -2px; }
+
+  /* ========== Chat (preparo v1.1) ========== */
+  .chat-bubble-ds {
+    max-width: 75%;
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-sm);
+    line-height: 1.5;
+  }
+  .chat-bubble-ds.user { background: var(--color-primary); color: #fff; margin-left: auto; border-bottom-right-radius: var(--space-1); }
+  .chat-bubble-ds.assistant { background: var(--color-surface); border: 1px solid var(--color-border); border-bottom-left-radius: var(--space-1); }
+
+  /* ========== DS-07: impressão A4 ========== */
+  @media print {
+    .ds-no-print, .ds-sidebar, nav, .btn { display: none !important; }
+    body { background: #fff; }
+    .ds-a4 {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 0;
+      padding: 15mm;
+      box-shadow: none;
+      border: none;
+      font-size: 11pt;
+    }
+    .ds-a4 h1 { font-size: 16pt; }
+    .ds-a4 h2 { font-size: 13pt; }
+  }
+  .ds-a4 {
+    background: #fff;
+    max-width: 210mm;
+    margin: 0 auto;
+    padding: var(--space-8);
+    box-shadow: var(--shadow-md);
+    border-radius: var(--radius-sm);
+  }
+
+  .swatch {
+    width: 100%;
+    height: 64px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    margin-bottom: var(--space-2);
+  }
+  .token-table td:first-child { font-family: var(--font-mono); font-size: var(--font-size-sm); }
+</style>
+</head>
+<body>
+
+<div class="container py-5" style="max-width: 960px;">
+  <header class="mb-5">
+    <h1>Aferix — Design System</h1>
+    <p class="text-muted-ds mb-1">Fonte única de verdade visual (PRD §10). Nenhuma tela pode inventar token próprio (DS-01).</p>
+    <p class="mb-0"><span class="badge text-bg-primary">v1.0 · baseline Sprint 1.0</span>
+    <span class="badge text-bg-secondary">tema claro (DS-10)</span>
+    <span class="badge text-bg-secondary">pt-BR (DS-08)</span></p>
+  </header>
+
+  <!-- Tokens -->
+  <section class="ds-section" id="tokens">
+    <h2 class="mb-3">1. Tokens</h2>
+    <h3>Cores</h3>
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-md-3"><div class="swatch" style="background:var(--color-primary)"></div><code>--color-primary</code><div class="small text-muted">#0d6efd</div></div>
+      <div class="col-6 col-md-3"><div class="swatch" style="background:var(--color-surface)"></div><code>--color-surface</code><div class="small text-muted">#ffffff</div></div>
+      <div class="col-6 col-md-3"><div class="swatch" style="background:var(--color-background)"></div><code>--color-background</code><div class="small text-muted">#f4f6f9</div></div>
+      <div class="col-6 col-md-3"><div class="swatch" style="background:var(--color-border)"></div><code>--color-border</code><div class="small text-muted">#dee2e6</div></div>
+      <div class="col-6 col-md-3"><div class="swatch" style="background:var(--color-success)"></div><code>--color-success</code><div class="small text-muted">#198754</div></div>
+      <div class="col-6 col-md-3"><div class="swatch" style="background:var(--color-danger)"></div><code>--color-danger</code><div class="small text-muted">#dc3545</div></div>
+      <div class="col-6 col-md-3"><div class="swatch" style="background:var(--color-warning)"></div><code>--color-warning</code><div class="small text-muted">#ffc107</div></div>
+      <div class="col-6 col-md-3"><div class="swatch" style="background:var(--color-sidebar-bg)"></div><code>--color-sidebar-bg</code><div class="small text-muted">#212529</div></div>
+    </div>
+
+    <h3>Espaçamento · Raios · Sombras</h3>
+    <table class="table table-sm token-table align-middle">
+      <thead><tr><th>Token</th><th>Valor</th><th>Uso</th></tr></thead>
+      <tbody>
+        <tr><td>--space-1 … --space-12</td><td>4 · 8 · 12 · 16 · 24 · 32 · 48 px</td><td>escala 4px</td></tr>
+        <tr><td>--radius-sm / md / lg / xl</td><td>4 · 8 · 12 · 16 px</td><td>bordas</td></tr>
+        <tr><td>--shadow-sm / md / lg</td><td>—</td><td>cards, modais</td></tr>
+        <tr><td>--font-size-xs … 2xl</td><td>12 · 14 · 16 · 20 · 24 · 32</td><td>DS-05 (sem font-size inline)</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Tipografia -->
+  <section class="ds-section" id="typography">
+    <h2 class="mb-3">2. Tipografia (DS-05)</h2>
+    <h1>H1 — 32 / bold</h1>
+    <h2>H2 — 24 / semibold</h2>
+    <h3>H3 — 20 / semibold</h3>
+    <p>Corpo — 16px, line-height 1.5. <span class="text-muted-ds">Texto auxiliar em --color-text-muted.</span></p>
+    <p class="mono" style="font-size:var(--font-size-sm)">Código / monoespaçado — 14px</p>
+  </section>
+
+  <!-- Botões -->
+  <section class="ds-section" id="buttons">
+    <h2 class="mb-3">3. Botões (DS-02 / DS-04)</h2>
+    <div class="d-flex flex-wrap gap-2 mb-3">
+      <button class="btn btn-ds btn-primary">Primário</button>
+      <button class="btn btn-outline-secondary">Secundário</button>
+      <button class="btn btn-outline-danger">Excluir</button>
+      <button class="btn btn-ds btn-primary" disabled>Desabilitado</button>
+      <button class="btn btn-ds btn-primary" autofocus>Foco visível</button>
+    </div>
+    <p class="small text-muted-ds mb-0">Estados: default · hover · focus-visible · disabled. Ícones: Bootstrap Icons (DS-06). <i class="bi bi-pencil"></i> <i class="bi bi-trash"></i> <i class="bi bi-printer"></i></p>
+  </section>
+
+  <!-- Formulários -->
+  <section class="ds-section" id="forms">
+    <h2 class="mb-3">4. Formulários</h2>
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Texto</label>
+        <input class="form-control" value="Razão Social">
+        <div class="valid-feedback-ds">Campo válido</div>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Documento (erro)</label>
+        <input class="form-control is-invalid" value="000">
+        <div class="invalid-feedback-ds">Esse cliente já possui cadastro em nossa base de dados!</div>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Select</label>
+        <select class="form-select"><option>Selecione um selo disponível...</option><option>SELO-001</option></select>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Somente leitura</label>
+        <input class="form-control" value="Cliente / Balança" disabled>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tabela -->
+  <section class="ds-section" id="tables">
+    <h2 class="mb-3">5. Tabela</h2>
+    <div class="table-responsive">
+      <table class="table table-ds mb-0">
+        <thead><tr><th>Nº</th><th>Cliente</th><th>Status</th><th>Data</th></tr></thead>
+        <tbody>
+          <tr data-href="#"><td class="mono">00042</td><td>Cliente Alfa</td><td><span class="badge-ds badge-ds-used">Usado</span></td><td>22/09/2026</td></tr>
+          <tr data-href="#"><td class="mono">00041</td><td>Cliente Beta</td><td><span class="badge-ds badge-ds-available">Disponível</span></td><td>21/09/2026</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small text-muted-ds mt-2 mb-0">Badges de selo: Disponível · Distribuído · Usado · Danificado.</p>
+  </section>
+
+  <!-- Card / Toast / Modal -->
+  <section class="ds-section" id="components">
+    <h2 class="mb-3">6. Cards, Toasts, Modais</h2>
+    <div class="row g-3">
+      <div class="col-md-4"><div class="card-ds"><div class="card-body"><h3 class="h6 fw-bold">Card</h3><p class="small text-muted-ds mb-0">Superfície com --radius-lg e --shadow-sm.</p></div></div></div>
+      <div class="col-md-4"><div class="toast-ds toast-success"><strong class="d-block small">Sucesso</strong><span class="small">Alterações salvas.</span></div></div>
+      <div class="col-md-4"><div class="toast-ds toast-danger"><strong class="d-block small">Erro</strong><span class="small">Documento duplicado.</span></div></div>
+    </div>
+    <button class="btn btn-ds btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#dsModal">Abrir modal</button>
+    <div class="modal fade" id="dsModal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-content-ds">
+          <div class="modal-header border-0 pb-0">
+            <h3 class="modal-title fs-5">Confirmar exclusão</h3>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body text-muted">Esta ação não pode ser desfeita.</div>
+          <div class="modal-footer border-0">
+            <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button class="btn btn-danger">Excluir</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sidebar -->
+  <section class="ds-section" id="sidebar" style="padding:0; overflow:hidden;">
+    <div class="p-4 pb-0"><h2 class="mb-1">7. Sidebar (DS-03)</h2><p class="small text-muted-ds">Acordeão + nav items — reutilizar markup nas telas.</p></div>
+    <div class="d-flex">
+      <aside class="ds-sidebar">
+        <div class="brand"><i class="bi bi-balance me-2"></i>Aferix</div>
+        <div class="nav-section-title">Operação</div>
+        <a class="nav-item-ds active" href="#"><i class="bi bi-house-door"></i> Painel</a>
+        <a class="nav-item-ds" href="#"><i class="bi bi-file-earmark-text"></i> Ordens de Serviço</a>
+        <a class="nav-item-ds" href="#"><i class="bi bi-people"></i> Clientes</a>
+        <a class="nav-item-ds" href="#"><i class="bi bi-balance"></i> Balanças</a>
+        <div class="nav-section-title">Gestão</div>
+        <a class="nav-item-ds" href="#"><i class="bi bi-patch-check"></i> Selos</a>
+        <a class="nav-item-ds" href="#"><i class="bi bi-people-fill"></i> Usuários</a>
+        <a class="nav-item-ds" href="#"><i class="bi bi-building"></i> Empresa</a>
+      </aside>
+      <div class="flex-grow-1 p-4 bg-white" style="min-height:280px;">
+        <p class="small text-muted-ds mb-0">Conteúdo da área de trabalho. Viewport mínimo 768px (DS-09).</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Chat -->
+  <section class="ds-section" id="chat">
+    <h2 class="mb-3">8. Chat IA (preparo v1.1)</h2>
+    <div class="d-flex flex-column gap-2">
+      <div class="chat-bubble-ds assistant">Olá! Sou o Assistente Aferix. Posso resumir O.S., buscar clientes e responder sobre procedimentos.</div>
+      <div class="chat-bubble-ds user">Quantas preventivas o cliente X teve em 2026?</div>
+      <div class="chat-bubble-ds assistant">O cliente X teve <strong>12</strong> O.S. preventivas em 2026.</div>
+    </div>
+  </section>
+
+  <!-- Print A4 -->
+  <section class="ds-section" id="print">
+    <div class="d-flex justify-content-between align-items-center mb-3 ds-no-print">
+      <h2 class="mb-0">9. Documento A4 (DS-07)</h2>
+      <button class="btn btn-ds btn-primary btn-sm" onclick="window.print()"><i class="bi bi-printer me-1"></i>Imprimir</button>
+    </div>
+    <div class="ds-a4">
+      <div class="d-flex justify-content-between align-items-start border-bottom pb-3 mb-3" style="border-color:var(--color-border)!important;">
+        <div>
+          <div class="fw-bold fs-5">Aferix — Ordem de Serviço</div>
+          <div class="small text-muted-ds">CNPJ 00.000.000/0001-00 · IPEM/PR 0000</div>
+        </div>
+        <div class="text-end">
+          <div class="mono fw-bold">OS nº 00042</div>
+          <div class="small text-muted-ds">22/09/2026</div>
+        </div>
+      </div>
+      <div class="row small mb-3">
+        <div class="col-6"><strong>Cliente</strong><br>Cliente Alfa Ltda<br>CNPJ 12.345.678/0001-00</div>
+        <div class="col-6"><strong>Balança</strong><br>Toledo 2098 · Série SER-001<br>300 kg · E(kg) 0.05</div>
+      </div>
+      <div class="border-top pt-2 small" style="border-color:var(--color-border)!important;">
+        <strong>Serviços:</strong> Manutenção preventiva · Certificado de conformidade
+      </div>
+      <div class="row mt-4 pt-3 border-top" style="border-color:var(--color-border)!important;">
+        <div class="col-6"><div class="border-top pt-1 small">Assinatura do cliente</div></div>
+        <div class="col-6"><div class="border-top pt-1 small">Técnico responsável</div></div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="text-center small text-muted-ds pb-4">
+    Aferix Design System · referência obrigatória para todo CSS de tela ·
+    <code>static/css/tokens.css</code> espelha estes tokens
+  </footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

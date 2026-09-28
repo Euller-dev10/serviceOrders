@@ -1,0 +1,90 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<div class="container py-4">
+    <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden mb-4">
+        <div class="card-body p-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <div class="d-flex align-items-center">
+                <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-3 me-3 d-flex align-items-center justify-content-center" style="width: 54px; height: 54px;">
+                    <i class="fas fa-certificate fs-4"></i>
+                </div>
+                <div>
+                    <span class="text-muted small text-uppercase tracking-wider fw-bold">Rastreabilidade</span>
+                    <h2 class="h4 mb-0 text-dark fw-bold">Selo</h2>
+                </div>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="{% url 'stamp_create' %}" class="btn btn-sm btn-outline-primary rounded-3 px-3 py-2 fw-semibold d-inline-flex align-items-center gap-2">
+                    <i class="fas fa-plus small"></i> Adicionar selo
+                </a>
+                <a href="{% url 'stamp_distribute' %}" class="btn btn-sm btn-primary rounded-3 px-3 py-2 fw-semibold d-inline-flex align-items-center gap-2">
+                    <i class="fas fa-share small"></i> Distribuir selo
+                </a>
+                <a href="{% url 'stamp_bulk_distribute' %}" class="btn btn-sm btn-outline-primary rounded-3 px-3 py-2 fw-semibold d-inline-flex align-items-center gap-2">
+                    <i class="fas fa-layer-group small"></i> Distribuir em lote
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:'info' }} border-0 rounded-3 shadow-sm">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" id="stampTable">
+                <thead class="bg-light border-bottom text-secondary">
+                    <tr>
+                        <th class="ps-4 py-3 text-uppercase small fw-bold">Número</th>
+                        <th class="py-3 text-uppercase small fw-bold">Status</th>
+                        <th class="py-3 text-uppercase small fw-bold">Técnico atual</th>
+                        <th class="py-3 text-uppercase small fw-bold">Delivery</th>
+                        <th class="text-end pe-4 py-3 text-uppercase small fw-bold">Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for stamp in stamps %}
+                    {% with delivery=stamp.stam_util.all|first %}
+                    <tr>
+                        <td class="ps-4 py-3 fw-semibold text-dark">{{ stamp.number }}</td>
+                        <td class="py-3">
+                            <span class="badge rounded-3 fw-semibold
+                                {% if stamp.status == 'AVAILABLE' %}bg-success bg-opacity-10 text-success
+                                {% elif stamp.status == 'DISTRIBUTED' %}bg-warning bg-opacity-10 text-warning
+                                {% else %}bg-danger bg-opacity-10 text-danger{% endif %}">
+                                {{ stamp.get_status_display }}
+                            </span>
+                        </td>
+                        <td class="py-3 text-secondary">{{ delivery.user.email|default:"-" }}</td>
+                        <td class="py-3 text-secondary">{{ delivery.get_status_display|default:"-" }}</td>
+                        <td class="text-end pe-4 py-3">
+                            {% if delivery and delivery.status == 'AVAILABLE' %}
+                            <form method="post" action="{% url 'stamp_damage' delivery.pk %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-danger rounded-3 px-3 fw-semibold" onclick="return confirm('Marcar selo como danificado?');">
+                                    <i class="fas fa-times small"></i> Danificar
+                                </button>
+                            </form>
+                            {% else %}
+                            <span class="text-muted small">—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endwith %}
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5 text-muted">Nenhum selo cadastrado.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

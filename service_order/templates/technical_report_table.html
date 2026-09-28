@@ -1,0 +1,19 @@
+<section class="card-ds report-section mb-4">
+    <h2 class="section-title">{{ title }}</h2>
+    {% if formset.non_form_errors %}<div class="alert alert-danger" role="alert">{{ formset.non_form_errors }}</div>{% endif %}
+    <div class="table-responsive">
+        <table class="table-ds measurement-table">
+            <thead><tr><th>#</th><th>Carga (kg)</th><th>Indicação (kg)</th><th>Erro (indicação - carga)</th><th>E.M.A. (kg)</th></tr></thead>
+            <tbody>{% for row in formset %}
+                <tr>
+                    {% for hidden in row.hidden_fields %}{{ hidden }}{% endfor %}
+                    <td class="{% if row.sequence.errors %}has-error{% endif %}">{{ row.sequence }}{{ row.sequence.errors }}</td>
+                    <td class="{% if row.load_kg.errors %}has-error{% endif %}">{{ row.load_kg }}{{ row.load_kg.errors }}</td>
+                    <td class="{% if row.indication_kg.errors %}has-error{% endif %}">{{ row.indication_kg }}{{ row.indication_kg.errors }}</td>
+                    <td class="calculated-error">{{ row.instance.error_kg|default:'' }}</td>
+                    <td class="{% if row.ema_kg.errors %}has-error{% endif %}">{{ row.ema_kg }}{{ row.ema_kg.errors }}</td>
+                </tr>
+            {% endfor %}</tbody>
+        </table>
+    </div>
+</section>

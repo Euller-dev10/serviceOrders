@@ -10,6 +10,7 @@
         <title>Ordem de Serviço WEB</title>
         <link rel="icon" type="image/x-icon" href="{% static 'assets/favicon.ico' %}" />
         <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
         
     </head>
     <body>
@@ -30,12 +31,13 @@
                            role="button" 
                            aria-expanded="false" 
                            aria-controls="menuOS">
-                            Ordens de Serviço
+                             <i class="fas fa-file-invoice me-2 text-primary"></i> Ordens de Serviço
                         </a>
                         <div class="collapse sidebar-submenu" id="menuOS" data-bs-parent="#sidebarAccordion">
                             <div class="list-group list-group-flush">
                                 <a href="{% url 'search_client' %}" class="list-group-item list-group-item-action list-group-item-light border-0">Gerar O.S.</a>
-                                <a href="{% url 'list_os' %}" class="list-group-item list-group-item-action list-group-item-light border-0">Suas Ordens</a>
+                                 <a href="{% url 'list_os' %}" class="list-group-item list-group-item-action list-group-item-light border-0">Suas Ordens</a>
+                                 <a href="{% url 'technical_report_list' %}" class="list-group-item list-group-item-action list-group-item-light border-0">Relatórios técnicos</a>
                             </div>
                         </div>
                     </div>
@@ -47,7 +49,7 @@
                            role="button" 
                            aria-expanded="false" 
                            aria-controls="menuClientes">
-                            Clientes
+                             <i class="fas fa-users me-2 text-primary"></i> Clientes
                         </a>
                         <div class="collapse sidebar-submenu" id="menuClientes" data-bs-parent="#sidebarAccordion">
                             <div class="list-group list-group-flush">
@@ -58,13 +60,13 @@
                     </div>
 
                     <div>
-                        <a class="list-group-item list-group-item-action list-group-item-light p-3 d-flex align-items-center accordion-toggle collapsed" 
-                           data-bs-toggle="collapse" 
-                           href="#menuBalancas" 
-                           role="button" 
-                           aria-expanded="false" 
+                        <a class="list-group-item list-group-item-action list-group-item-light p-3 d-flex align-items-center accordion-toggle collapsed"
+                           data-bs-toggle="collapse"
+                           href="#menuBalancas"
+                           role="button"
+                           aria-expanded="false"
                            aria-controls="menuBalancas">
-                            Balanças
+                             <i class="fas fa-scale-balanced me-2 text-primary"></i> Balanças
                         </a>
                         <div class="collapse sidebar-submenu" id="menuBalancas" data-bs-parent="#sidebarAccordion">
                             <div class="list-group list-group-flush">
@@ -72,8 +74,73 @@
                                 <a href="{% url 'new_scale' %}" class="list-group-item list-group-item-action list-group-item-light border-0">Nova Balança</a>
                             </div>
                         </div>
-                        
+
                     </div>
+
+                    {% if user.is_superuser or user.role == 'ADMIN' %}
+                    <div>
+                        <a class="list-group-item list-group-item-action list-group-item-light p-3 d-flex align-items-center accordion-toggle collapsed"
+                           data-bs-toggle="collapse"
+                           href="#menuEquipe"
+                           role="button"
+                           aria-expanded="false"
+                           aria-controls="menuEquipe">
+                            <i class="fas fa-user-group me-2 text-primary"></i> Equipe
+                        </a>
+                        <div class="collapse sidebar-submenu" id="menuEquipe" data-bs-parent="#sidebarAccordion">
+                            <div class="list-group list-group-flush">
+                                <a href="{% url 'user_list' %}" class="list-group-item list-group-item-action list-group-item-light border-0">Usuários</a>
+                                <a href="{% url 'user_invite' %}" class="list-group-item list-group-item-action list-group-item-light border-0">Convidar Usuário</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <a class="list-group-item list-group-item-action list-group-item-light p-3 d-flex align-items-center accordion-toggle collapsed"
+                           data-bs-toggle="collapse"
+                           href="#menuSelos"
+                           role="button"
+                           aria-expanded="false"
+                           aria-controls="menuSelos">
+                            <i class="fas fa-stamp me-2 text-primary"></i> Selo
+                        </a>
+                        <div class="collapse sidebar-submenu" id="menuSelos" data-bs-parent="#sidebarAccordion">
+                            <div class="list-group list-group-flush">
+                                <a href="{% url 'stamp_list' %}" class="list-group-item list-group-item-action list-group-item-light border-0">Estoque / Técnicos</a>
+                                <a href="{% url 'stamp_create' %}" class="list-group-item list-group-item-action list-group-item-light border-0">Adicionar Selo</a>
+                                <a href="{% url 'stamp_distribute' %}" class="list-group-item list-group-item-action list-group-item-light border-0">Distribuir Selo</a>
+                                <a href="{% url 'stamp_bulk_distribute' %}" class="list-group-item list-group-item-action list-group-item-light border-0">Distribuir em Lote</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <a class="list-group-item list-group-item-action list-group-item-light p-3 d-flex align-items-center accordion-toggle collapsed"
+                           data-bs-toggle="collapse"
+                           href="#menuIA"
+                           role="button"
+                           aria-expanded="false"
+                           aria-controls="menuIA">
+                             <i class="fas fa-wand-magic-sparkles me-2 text-primary"></i> Assistente IA
+                        </a>
+                        <div class="collapse sidebar-submenu" id="menuIA" data-bs-parent="#sidebarAccordion">
+                            <div class="list-group list-group-flush">
+                                <a href="{% url 'chat_index' %}" class="list-group-item list-group-item-action list-group-item-light border-0">Conversas</a>
+                                <a href="{% url 'source_list' %}" class="list-group-item list-group-item-action list-group-item-light border-0">Fontes RAG</a>
+                                <a href="{% url 'ai_config' %}" class="list-group-item list-group-item-action list-group-item-light border-0">Configuração</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div>
+                        <a href="{% url 'chat_index' %}" class="list-group-item list-group-item-action list-group-item-light p-3">
+                             <i class="fas fa-wand-magic-sparkles me-2 text-primary"></i> Assistente IA
+                        </a>
+                    </div>
+                    {% endif %}
+                    {% if user.is_superuser or user.role == 'ADMIN' %}
+                    <a href="{% url 'billing' %}" class="list-group-item list-group-item-action list-group-item-light p-3">
+                        Plano e faturamento
+                    </a>
+                    {% endif %}
                     {% endif %}
                 </div>
             </div>
@@ -87,7 +154,7 @@
             
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul class="navbar-nav ms-auto mt-2 mt-lg-0 align-items-center">
-                                <li class="nav-item active"><a class="nav-link me-3" href="{% url 'home' %}">Home</a></li>
+                                <li class="nav-item active"><a class="nav-link me-3" href="{% url 'home' %}"><i class="fas fa-house me-1"></i> Home</a></li>
                                 {% if not user.is_authenticated %}
                                     <li class="nav-item active"><a class="nav-link me-3" href="{% url 'login' %}">Login</a></li>
                                 {% endif %}
@@ -99,13 +166,14 @@
                                                 <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
                                                 <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
                                             </svg>
-                                            Meu Perfil
+                                            {% if user.get_full_name %}{{ user.get_full_name }}{% else %}{{ user.email }}{% endif %}
                                         </a>
                                             
                                             <div class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="navbarDropdownPerfil">
-                                                    <a class="dropdown-item" href="#!">Minha Conta</a>
-                                                    <div class="dropdown-divider"></div>
-                                                    <a class="dropdown-item text-danger" href="{% url 'logout' %}">Sair</a>
+                                                     <form method="post" action="{% url 'logout' %}" class="m-0">
+                                                        {% csrf_token %}
+                                                        <button type="submit" class="dropdown-item text-danger border-0 bg-transparent w-100 text-start">Sair</button>
+                                                    </form>
                                             </div>
                                     {% endif %}
                                 </li>
@@ -116,6 +184,39 @@
                 </nav>
                 
                 <div class="container-fluid">
+                    {% if plan_usage.any_warning %}
+                    <div class="alert d-print-none {% if plan_usage.over_limit %}alert-danger{% else %}alert-warning{% endif %} mt-3 mb-0 d-flex justify-content-between align-items-center" role="status">
+                        <span>
+                            {% if plan_usage.over_limit %}
+                                Um ou mais limites do plano foram atingidos.
+                            {% else %}
+                                Você está próximo do limite de uso do plano.
+                            {% endif %}
+                        </span>
+                    {% if user.is_superuser or user.role == 'ADMIN' or user.role == 'STAFF' %}
+                    <div>
+                        <a class="list-group-item list-group-item-action list-group-item-light p-3 d-flex align-items-center accordion-toggle collapsed"
+                           data-bs-toggle="collapse"
+                           href="#menuOperacao"
+                           role="button"
+                           aria-expanded="false"
+                           aria-controls="menuOperacao">
+                            Operação
+                        </a>
+                        <div class="collapse sidebar-submenu" id="menuOperacao" data-bs-parent="#sidebarAccordion">
+                            <div class="list-group list-group-flush">
+                                <a href="{% url 'dashboard' %}" class="list-group-item list-group-item-action list-group-item-light border-0">Indicadores</a>
+                                <a href="{% url 'os_export' %}?tipo=os" class="list-group-item list-group-item-action list-group-item-light border-0">Exportar O.S. (CSV)</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if user.is_superuser or user.role == 'ADMIN' %}
+                        <a href="{% url 'billing' %}" class="alert-link ms-3">Ver plano e uso</a>
+                        {% endif %}
+                    </div>
+                    {% endif %}
                     {% block content %}
                     {% endblock %}
                 </div>
